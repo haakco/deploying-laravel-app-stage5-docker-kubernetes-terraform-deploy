@@ -1,0 +1,6 @@
+---
+architecture: standalone
+image:
+  pullPolicy: Always
+auth:
+  password: $REDIS_PASS

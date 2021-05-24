@@ -1,0 +1,6 @@
+---
+architecture: standalone
+image:
+  pullPolicy: Always
+auth:
+  password: password_example
