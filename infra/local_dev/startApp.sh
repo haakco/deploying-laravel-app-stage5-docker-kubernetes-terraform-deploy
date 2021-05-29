@@ -12,6 +12,8 @@ export DB_PASS=password_example
 
 cat ./wave/postgresql-values.tmpl.yaml | envsubst > ./wave/postgresql-values.env.yaml
 
+kubectl apply --namespace wave -f ./wave/postgresql-pvc.yaml
+
 helm install \
   wave-postgresql bitnami/postgresql \
   --namespace wave \
@@ -53,3 +55,9 @@ kubectl apply --namespace wave  -f ./wave/dev-wave-cert-prod.env.yaml
 
 cat ./wave/wave.deploy.tmpl.yaml | envsubst > ./wave/wave.deploy.env.yaml
 kubectl apply --namespace wave -f ./wave/wave.deploy.env.yaml
+
+#kubectl exec --tty --namespace wave -i $(kubectl get pods --namespace wave | grep wave-lv-example | awk '{print $1}') -- bash -c 'su - www-data'
+
+#cd /var/www/site
+#php artisan migrate
+#php artisan db:seed
