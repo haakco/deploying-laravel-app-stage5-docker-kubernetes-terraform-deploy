@@ -4,3 +4,7 @@ image:
   pullPolicy: Always
 auth:
   password: $REDIS_PASS
+master:
+  persistence:
+    existingClaim:
+      redis-pvc

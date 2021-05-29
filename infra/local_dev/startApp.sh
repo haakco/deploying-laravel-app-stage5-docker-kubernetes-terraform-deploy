@@ -10,16 +10,17 @@ export DB_NAME=db_example
 export DB_USER=user_example
 export DB_PASS=password_example
 
-cat ./wave/postgresql-values.tmpl.yaml | envsubst > ./wave/postgresql-values.env.yaml
-
 kubectl apply --namespace wave -f ./wave/postgresql-pvc.yaml
 
+cat ./wave/postgresql-values.tmpl.yaml | envsubst > ./wave/postgresql-values.env.yaml
 helm install \
   wave-postgresql bitnami/postgresql \
   --namespace wave \
   -f ./wave/postgresql-values.env.yaml
 
 export REDIS_PASS=password_example
+
+kubectl apply --namespace wave -f ./wave/redis-pvc.yaml
 
 cat ./wave/redis-values.tmpl.yaml | envsubst > ./wave/redis-values.env.yaml
 helm install \
