@@ -2,11 +2,12 @@
 image:
   tag: 13
   pullPolicy: Always
-
 postgresqlDatabase: db_example
 postgresqlUsername: user_example
 postgresqlPassword: password_example
-
 #existingSecret:
 metrics:
   enabled: true
+persistence:
+  enabled: true
+  existingClaim: postgres-pvc

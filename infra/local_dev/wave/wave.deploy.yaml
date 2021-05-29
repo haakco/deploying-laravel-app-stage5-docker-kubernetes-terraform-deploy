@@ -36,7 +36,7 @@ spec:
             - name: LVENV_APP_DEBUG
               value: "true"
             - name: LVENV_APP_LOG_LEVEL
-              value: ""
+              value: "debug"
             - name: LVENV_APP_URL
               value: "https://dev.custd.com"
             - name: LVENV_DB_CONNECTION
@@ -111,7 +111,7 @@ spec:
       volumes:
         - name: wave-volume
           hostPath:
-            path: /Volumes/Dev/HaakCo/Talks/the-different-stages-to-learning-how-to-deploy-a-laravel-application/Stage_4/infra/local_dev/stage3-ubuntu-20.04-php7.4-lv-wave
+            path: /Volumes/Dev/HaakCo/Talks/deploying-laravel-app/deploying-laravel-app-stage4-docker-kubernetes-terraform-deploy/infra/local_dev/stage3-ubuntu-20.04-php7.4-lv-wave
 ---
 apiVersion: v1
 kind: Service
