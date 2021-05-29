@@ -57,12 +57,12 @@ helm install \
 
 setLvDepProfile
 
-cat ./cloudflare-apikey-secret.tmp.yaml | envsubst > ./cloudflare-apikey-secret.yaml
+cat ./cloudflare-apikey-secret.tmpl.yaml | envsubst > ./cloudflare-apikey-secret.env.yaml
 
-kubectl --namespace cert-manager apply -f ./cloudflare-apikey-secret.yaml
+kubectl --namespace cert-manager apply -f ./cloudflare-apikey-secret.env.yaml
 
 # Remove key so we don't accidentally save it.
-rm -rf ./cloudflare-apikey-secret.yaml
+rm -rf ./cloudflare-apikey-secret.env.yaml
 
 kubectl apply --namespace cert-manager -f ./cert/acme-production.yaml
 kubectl apply --namespace cert-manager  -f ./cert/acme-staging.yaml
@@ -76,14 +76,14 @@ helm install \
   --version 9.1.1 \
   --values ./traefik/traefik-values.yaml
 
-cat ./traefik/dev-traefik-cert.tmpl.yaml | envsubst > ./traefik/dev-traefik-cert.yaml
-kubectl apply --namespace traefik -f ./traefik/dev-traefik-cert.yaml
+cat ./traefik/dev-traefik-cert.tmpl.yaml | envsubst > ./traefik/dev-traefik-cert.env.yaml
+kubectl apply --namespace traefik -f ./traefik/dev-traefik-cert.env.yaml
 
 TRAEFIK_AUTH=$(docker run --rm -ti xmartlabs/htpasswd "${TRAEFIK_USERNAME}" "${TRAEFIK_PASSWD}" | openssl base64 -A)
 export TRAEFIK_AUTH
 
-cat ./traefik/traefik-ingres.tmpl.yaml | envsubst > ./traefik/traefik-ingres.yaml
-kubectl apply --namespace traefik -f ./traefik/traefik-ingres.yaml
+cat ./traefik/traefik-ingres.tmpl.yaml | envsubst > ./traefik/traefik-ingres.env.yaml
+kubectl apply --namespace traefik -f ./traefik/traefik-ingres.env.yaml
 
 kubectl apply --namespace traefik -f ./traefik/traefik-monitoring.yml
 
@@ -94,8 +94,8 @@ PROMETHEUS_AUTH=$(docker run --rm -ti xmartlabs/htpasswd "${PROMETHEUS_USERNAME}
 export PROMETHEUS_AUTH
 
 export DOMAIN=$DOMAIN
-cat ./prometheus/dev-prometheus-cert.tmpl.yaml | envsubst > ./prometheus/dev-prometheus-cert.yaml
-kubectl apply --namespace monitoring -f ./prometheus/dev-prometheus-cert.yaml
+cat ./prometheus/dev-prometheus-cert.tmpl.yaml | envsubst > ./prometheus/dev-prometheus-cert.env.yaml
+kubectl apply --namespace monitoring -f ./prometheus/dev-prometheus-cert.env.yaml
 
-cat ./prometheus/prometheus-ingres.tmpl.yaml | envsubst > ./prometheus/prometheus-ingres.yaml
-kubectl apply --namespace monitoring -f ./prometheus/prometheus-ingres.yaml
+cat ./prometheus/prometheus-ingres.tmpl.yaml | envsubst > ./prometheus/prometheus-ingres.env.yaml
+kubectl apply --namespace monitoring -f ./prometheus/prometheus-ingres.env.yaml
