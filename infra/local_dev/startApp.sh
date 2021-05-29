@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 setopt interactive_comments
-. "$HOME"/.zshrc
 export DOMAIN=dev.custd.com
 export TRAEFIK_USERNAME='traefik'
 export TRAEFIK_PASSWD='yairohchahKoo0haem0d'
@@ -10,20 +9,21 @@ kubectl create namespace wave
 export DB_NAME=db_example
 export DB_USER=user_example
 export DB_PASS=password_example
-cat ./wave/postgresql-values.tmpl.yaml | envsubst > ./wave/postgresql-values.yaml
+
+cat ./wave/postgresql-values.tmpl.yaml | envsubst > ./wave/postgresql-values.env.yaml
 
 helm install \
   wave-postgresql bitnami/postgresql \
   --namespace wave \
-  -f ./wave/postgresql-values.yaml
+  -f ./wave/postgresql-values.env.yaml
 
 export REDIS_PASS=password_example
 
-cat ./wave/redis-values.tmpl.yaml | envsubst > ./wave/redis-values.yaml
+cat ./wave/redis-values.tmpl.yaml | envsubst > ./wave/redis-values.env.yaml
 helm install \
   wave-redis bitnami/redis \
   --namespace wave \
-  -f ./wave/redis-values.yaml
+  -f ./wave/redis-values.env.yaml
 
 export APP_KEY=base64:8dQ7xw/kM9EYMV4cUkzKgET8jF4P0M0TOmmqN05RN2w=
 export APP_NAME=HaakCo Wave
@@ -48,8 +48,8 @@ export JWT_SECRET=Jrsweag3Mf0srOqDizRkhjWm5CEFcrBy
 WAVE_DIR=$(realpath "${PWD}/stage3-ubuntu-20.04-php7.4-lv-wave")
 export WAVE_DIR
 
-cat ./wave/dev-wave-cert-prod.tmpl.yaml | envsubst > ./wave/dev-wave-cert-prod.yaml
-kubectl apply --namespace wave  -f ./wave/dev-wave-cert-prod.yaml
+cat ./wave/dev-wave-cert-prod.tmpl.yaml | envsubst > ./wave/dev-wave-cert-prod.env.yaml
+kubectl apply --namespace wave  -f ./wave/dev-wave-cert-prod.env.yaml
 
-cat ./wave/wave.deploy.tmpl.yaml | envsubst > ./wave/wave.deploy.yaml
-kubectl apply --namespace wave -f ./wave/wave.deploy.yaml
+cat ./wave/wave.deploy.tmpl.yaml | envsubst > ./wave/wave.deploy.env.yaml
+kubectl apply --namespace wave -f ./wave/wave.deploy.env.yaml

@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 setopt interactive_comments
-. "$HOME"/.zshrc
+
+if [[ -z ${CLOUDFLARE_API_TOKEN} ]] ; then
+  echo "Please enter the CLOUDFLARE_API_TOKEN or set the env variable: "
+  read -r CLOUDFLARE_API_TOKEN
+else
+  echo "Read CLOUDFLARE_API_TOKEN from env"
+fi
+
+export CLOUDFLARE_API_TOKEN
+
 export DOMAIN=dev.custd.com
 export TRAEFIK_USERNAME='traefik'
 export TRAEFIK_PASSWD='yairohchahKoo0haem0d'
