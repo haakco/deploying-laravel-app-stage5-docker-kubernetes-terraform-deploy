@@ -11,3 +11,6 @@ metrics:
 persistence:
   enabled: true
   existingClaim: postgres-pvc
+service:
+  type: NodePort
+  nodePort: $DB_EXTERNAL_PORT

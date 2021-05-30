@@ -108,3 +108,37 @@ kubectl apply --namespace monitoring -f ./prometheus/dev-prometheus-cert.env.yam
 
 cat ./prometheus/prometheus-ingres.tmpl.yaml | envsubst > ./prometheus/prometheus-ingres.env.yaml
 kubectl apply --namespace monitoring -f ./prometheus/prometheus-ingres.env.yaml
+
+export KEEL_USERNAME="${TRAEFIK_USERNAME}"
+export KEEL_PASSWD="${TRAEFIK_PASSWD}"
+
+cat ./keel/keel-values.tmpl.yml | envsubst > ./keel/keel-values.env.yaml
+helm repo add keel https://charts.keel.sh
+helm repo update
+helm upgrade \
+  --install keel \
+  --namespace=kube-system \
+  --version 0.9.8 \
+  --values ./keel/keel-values.env.yaml \
+  keel/keel
+
+cat ./keel/dev-keel-cert.tmpl.yaml | envsubst > ./keel/dev-keel-cert.env.yaml
+kubectl apply --namespace kube-system -f ./keel/dev-keel-cert.env.yaml
+cat ./keel/keel-ingres.tmpl.yaml | envsubst > ./keel/keel-ingres.env.yaml
+kubectl apply --namespace kube-system -f ./keel/keel-ingres.env.yaml
+
+
+export KEYCLOAK_ADMIN_USER="${TRAEFIK_USERNAME}"
+export KEYCLOAK_ADMIN_PASSWORD="${TRAEFIK_PASSWD}"
+
+cat ./keycloak/keycloak-values.tmpl.yml | envsubst > ./keycloak/keycloak-values.env.yaml
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm upgrade \
+  --install keycloak \
+  --namespace=traefik \
+  --version 3.0.4 \
+  --values ./keycloak/keycloak-values.env.yaml \
+  bitnami/keycloak
+
+

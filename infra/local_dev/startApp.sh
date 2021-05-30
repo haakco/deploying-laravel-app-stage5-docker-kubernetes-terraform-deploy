@@ -9,14 +9,17 @@ kubectl create namespace wave
 export DB_NAME=db_example
 export DB_USER=user_example
 export DB_PASS=password_example
+export DB_EXTERNAL_PORT=30432
 
 kubectl apply --namespace wave -f ./wave/postgresql-pvc.yaml
 
 cat ./wave/postgresql-values.tmpl.yaml | envsubst > ./wave/postgresql-values.env.yaml
-helm install \
-  wave-postgresql bitnami/postgresql \
+helm upgrade \
+  --install \
+  wave-postgresql \
   --namespace wave \
-  -f ./wave/postgresql-values.env.yaml
+  -f ./wave/postgresql-values.env.yaml \
+  bitnami/postgresql
 
 export REDIS_PASS=password_example
 

@@ -1,0 +1,11 @@
+auth:
+  adminUser: $KEYCLOAK_ADMIN_USER
+  adminPassword: $KEYCLOAK_ADMIN_PASSWORD
+postgresql:
+  persistence:
+    enabled: true
+    existingClaim: keycloak-postgres-pvc
+metrics:
+  enabled: true
+  serviceMonitor:
+    namespace: monitoring

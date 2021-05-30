@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+kubectl delete --namespace kube-system -f ./keel/keel-ingres.tmpl.yaml
+kubectl delete --namespace kube-system -f ./keel/dev-keel-cert.tmpl.yaml
+helm uninstall --namespace=kube-system keel
+
 kubectl delete --namespace monitoring -f ./prometheus/prometheus-ingres.yaml
 kubectl delete --namespace monitoring -f ./prometheus/dev-prometheus-cert.tmpl.yaml
 
