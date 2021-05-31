@@ -19,10 +19,12 @@ kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin
 
 helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
 helm repo update
-helm install \
-  kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard \
+helm upgrade \
+  --install \
+  kubernetes-dashboard \
   --namespace kube-system \
-  --version 4.2.0
+  --version 4.2.0 \
+  kubernetes-dashboard/kubernetes-dashboard
 
 #kubectl describe secret $(kubectl get secrets | grep 'dashboard-admin' | awk '{print $1}')
 #kubectl proxy &
@@ -30,13 +32,15 @@ helm install \
 
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
-helm install \
-  metrics-server bitnami/metrics-server \
+helm upgrade \
+  --install \
+  metrics-server  \
   --namespace kube-system \
   --version v5.8.9 \
   --set rbac.create=true \
   --set apiService.create=true \
-  --set extraArgs.kubelet-insecure-tls=true
+  --set extraArgs.kubelet-insecure-tls=true \
+  bitnami/metrics-server
 
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
@@ -46,25 +50,36 @@ helm repo update
 #https://docs.syseleven.de/metakube/en/metakube-accelerator/building-blocks/observability-monitoring/kube-prometheus-stack
 kubectl create namespace monitoring
 
-helm install \
-  prometheus-operator prometheus-community/kube-prometheus-stack \
+export GRAFANA_ADMIN_PASSWORD=example_password
+
+cat ./prometheus/prometheus-values.tmpl.yaml | envsubst > ./prometheus/prometheus-values.env.yaml
+kubectl apply --namespace monitoring -f ./prometheus/prometheus-values.env.yaml
+
+helm upgrade \
+  --install \
+  prometheus-operator \
   --namespace monitoring \
   --version 16.1.0 \
-  -f ./prometheus/prometheus-values.yaml
+  -f ./prometheus/prometheus-values.env.yaml \
+  prometheus-community/kube-prometheus-stack
 
 kubectl create namespace cert-manager
 #kubectl delete namespace cert-manager
 
 kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
-helm install \
+helm install\
   cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --version 1.3.1 \
   --set installCRDs=true \
   --set prometheus.enabled=true \
-  --set prometheus.servicemonitor.enabled=true
+  --set prometheus.servicemonprometheus-values.env.yamlitor.enabled=true
 
-setLvDepProfile
+while [[ $(kubectl get pods --namespace cert-manager | grep 1/1 | wc -l | xargs) != "3" ]];
+do
+  echo "waiting for 3 cert-manager pods"
+  sleep 1
+done
 
 cat ./cloudflare-apikey-secret.tmpl.yaml | envsubst > ./cloudflare-apikey-secret.env.yaml
 
@@ -79,11 +94,13 @@ kubectl apply --namespace cert-manager  -f ./cert/acme-staging.yaml
 helm repo add traefik https://containous.github.io/traefik-helm-chart
 helm repo update
 kubectl create namespace traefik
-helm install \
-  traefik traefik/traefik \
+helm upgrade \
+  --install \
+  traefik \
   --namespace traefik \
   --version 9.1.1 \
-  --values ./traefik/traefik-values.yaml
+  --values ./traefik/traefik-values.yaml \
+  traefik/traefik
 
 cat ./traefik/dev-traefik-cert.tmpl.yaml | envsubst > ./traefik/dev-traefik-cert.env.yaml
 kubectl apply --namespace traefik -f ./traefik/dev-traefik-cert.env.yaml
@@ -126,19 +143,5 @@ cat ./keel/dev-keel-cert.tmpl.yaml | envsubst > ./keel/dev-keel-cert.env.yaml
 kubectl apply --namespace kube-system -f ./keel/dev-keel-cert.env.yaml
 cat ./keel/keel-ingres.tmpl.yaml | envsubst > ./keel/keel-ingres.env.yaml
 kubectl apply --namespace kube-system -f ./keel/keel-ingres.env.yaml
-
-
-export KEYCLOAK_ADMIN_USER="${TRAEFIK_USERNAME}"
-export KEYCLOAK_ADMIN_PASSWORD="${TRAEFIK_PASSWD}"
-
-cat ./keycloak/keycloak-values.tmpl.yml | envsubst > ./keycloak/keycloak-values.env.yaml
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-helm upgrade \
-  --install keycloak \
-  --namespace=traefik \
-  --version 3.0.4 \
-  --values ./keycloak/keycloak-values.env.yaml \
-  bitnami/keycloak
 
 

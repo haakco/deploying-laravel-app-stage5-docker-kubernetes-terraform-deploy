@@ -26,10 +26,12 @@ export REDIS_PASS=password_example
 kubectl apply --namespace wave -f ./wave/redis-pvc.yaml
 
 cat ./wave/redis-values.tmpl.yaml | envsubst > ./wave/redis-values.env.yaml
-helm install \
-  wave-redis bitnami/redis \
+helm upgrade \
+  --install \
+  wave-redis \
   --namespace wave \
-  -f ./wave/redis-values.env.yaml
+  -f ./wave/redis-values.env.yaml \
+  bitnami/redis
 
 export APP_KEY=base64:8dQ7xw/kM9EYMV4cUkzKgET8jF4P0M0TOmmqN05RN2w=
 export APP_NAME=HaakCo Wave
