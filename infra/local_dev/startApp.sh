@@ -62,6 +62,12 @@ kubectl apply --namespace wave  -f ./wave/dev-wave-cert-prod.env.yaml
 cat ./wave/wave.deploy.tmpl.yaml | envsubst > ./wave/wave.deploy.env.yaml
 kubectl apply --namespace wave -f ./wave/wave.deploy.env.yaml
 
+cat ./wave/dev-rediscommander-cert-prod.tmpl.yaml | envsubst > ./wave/dev-rediscommander-cert-prod.env.yaml
+kubectl apply --namespace wave  -f ./wave/dev-rediscommander-cert-prod.env.yaml
+
+cat ./wave/rediscommander.deploy.tmpl.yaml | envsubst > ./wave/rediscommander.deploy.env.yaml
+kubectl apply --namespace wave -f ./wave/rediscommander.deploy.env.yaml
+
 #kubectl exec --tty --namespace wave -i $(kubectl get pods --namespace wave | grep wave-lv-example | awk '{print $1}') -- bash -c 'su - www-data'
 
 #cd /var/www/site

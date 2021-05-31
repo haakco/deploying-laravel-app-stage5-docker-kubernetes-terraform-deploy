@@ -1,0 +1,13 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dev-rediscommander-cert-prod
+spec:
+  commonName: rediscommander.$DOMAIN
+  secretName: dev-rediscommander-cert-prod-tls
+  dnsNames:
+    - rediscommander.$DOMAIN
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer

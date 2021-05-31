@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rediscommander
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: "@every 12h"
+spec:
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: rediscommander
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: rediscommander
+    spec:
+      containers:
+        - name: rediscommander
+          image: rediscommander/redis-commander:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: REDIS_HOST
+              value: $REDIS_HOST
+            - name: REDIS_PASSWORD
+              value: $REDIS_PASS
+            - name: K8S_SIGTERM
+              value: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rediscommander
+spec:
+  type: NodePort
+  ports:
+    - port: 8081
+      targetPort: 8081
+  selector:
+    app: rediscommander
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wave-traefik-ingress
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`rediscommander.$DOMAIN`)
+      kind: Rule
+      services:
+        - name: rediscommander
+          port: 8081
+      middlewares:
+        - name: traefik-auth
+          namespace: traefik
+        - name: traefik-compress
+          namespace: traefik
+  tls:
+    secretName: dev-rediscommander-cert-prod-tls
+
