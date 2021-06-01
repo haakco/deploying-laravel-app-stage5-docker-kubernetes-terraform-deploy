@@ -2,12 +2,12 @@ terraform {
   required_providers {
     cloudflare = {
       source = "cloudflare/cloudflare"
-      version = "~> 2.20"
+      version = "~> 2.21"
     }
 
     digitalocean = {
       source = "digitalocean/digitalocean"
-      version = "~> 2.8"
+      version = "~> 2.9"
     }
 
     kubernetes = {

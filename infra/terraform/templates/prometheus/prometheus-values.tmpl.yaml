@@ -1,0 +1,58 @@
+---
+# https://www.digitalocean.com/community/tutorials/how-to-set-up-digitalocean-kubernetes-cluster-monitoring-with-helm-and-prometheus-operator
+# Define persistent storage for Grafana (PVC)
+grafana:
+  adminPassword: "${grafana_admin_password}"
+  persistence:
+    enabled: true
+    storageClassName: do-block-storage
+    accessModes: ["ReadWriteOnce"]
+    size: 5Gi
+  grafana.ini:
+    server:
+      root_url: https://grafana.${dns_domain}
+
+prometheus-node-exporter:
+  service:
+    port: 30206
+    targetPort: 30206
+
+
+alertmanager:
+  alertmanagerSpec:
+    externalUrl: https://alertmanager.${dns_domain}
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          storageClassName: do-block-storage
+          resources:
+            requests:
+              storage: 5Gi
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    externalUrl: https://prometheus.${dns_domain}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          storageClassName: do-block-storage
+          resources:
+            requests:
+              storage: 5Gi
+
+# Disable Etcd metrics
+kubeEtcd:
+  enabled: false
+
+# Disable Controller metrics
+kubeControllerManager:
+  enabled: false
+
+# Disable Scheduler metrics
+kubeScheduler:
+  enabled: false

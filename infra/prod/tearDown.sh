@@ -31,6 +31,8 @@ kubectl delete crd thanosrulers.monitoring.coreos.com
 
 kubectl delete namespace monitoring
 
+helm uninstall --namespace kube-system metrics-server
+
 helm uninstall --namespace kube-system kubernetes-dashboard
 
 kubectl delete clusterrolebinding dashboard-admin-sa

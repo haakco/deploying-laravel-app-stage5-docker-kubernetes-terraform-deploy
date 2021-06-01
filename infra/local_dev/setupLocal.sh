@@ -24,23 +24,14 @@ helm upgrade \
   kubernetes-dashboard \
   --namespace kube-system \
   --version 4.2.0 \
+  --set metricsScraper.enabled=true \
+  --set metrics-server.enabled=true \
+  --set metrics-server.args={--kubelet-preferred-address-types=InternalIP,--kubelet-insecure-tls} \
   kubernetes-dashboard/kubernetes-dashboard
 
 #kubectl describe secret $(kubectl get secrets | grep 'dashboard-admin' | awk '{print $1}')
 #kubectl proxy &
 #open "http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:https/proxy/#/login"
-
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-helm upgrade \
-  --install \
-  metrics-server  \
-  --namespace kube-system \
-  --version v5.8.9 \
-  --set rbac.create=true \
-  --set apiService.create=true \
-  --set extraArgs.kubelet-insecure-tls=true \
-  bitnami/metrics-server
 
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update

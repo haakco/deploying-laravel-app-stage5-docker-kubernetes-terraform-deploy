@@ -319,3 +319,5 @@ deploy_id_ed25519
 deploy_id_ed25519.pub
 
 *.env.yaml
+
+.terraform.lock.hcl
