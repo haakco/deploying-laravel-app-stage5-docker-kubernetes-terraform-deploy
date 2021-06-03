@@ -41,31 +41,37 @@ kind: Service
 metadata:
   name: rediscommander
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 8081
       targetPort: 8081
   selector:
     app: rediscommander
 ---
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
+kind: Ingress
+apiVersion: networking.k8s.io/v1
 metadata:
-  name: wave-traefik-ingress
+  name: rediscommander
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-traefik-auth@kubernetescrd,traefik-traefik-compress@kubernetescrd
+    cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`rediscommander.$DOMAIN`)
-      kind: Rule
-      services:
-        - name: rediscommander
-          port: 8081
-      middlewares:
-        - name: traefik-auth
-          namespace: traefik
-        - name: traefik-compress
-          namespace: traefik
   tls:
-    secretName: dev-rediscommander-cert-prod-tls
+    - hosts:
+        - rediscommander.$DOMAIN
+      secretName: rediscommander-cert-tls
+  rules:
+    - host: rediscommander.$DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rediscommander
+                port:
+                  number: 8081
 

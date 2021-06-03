@@ -56,14 +56,8 @@ export JWT_SECRET=Jrsweag3Mf0srOqDizRkhjWm5CEFcrBy
 WAVE_DIR=$(realpath "${PWD}/stage3-ubuntu-20.04-php7.4-lv-wave")
 export WAVE_DIR
 
-cat ./wave/dev-wave-cert-prod.tmpl.yaml | envsubst > ./wave/dev-wave-cert-prod.env.yaml
-kubectl apply --namespace wave  -f ./wave/dev-wave-cert-prod.env.yaml
-
 cat ./wave/wave.deploy.tmpl.yaml | envsubst > ./wave/wave.deploy.env.yaml
 kubectl apply --namespace wave -f ./wave/wave.deploy.env.yaml
-
-cat ./wave/dev-rediscommander-cert-prod.tmpl.yaml | envsubst > ./wave/dev-rediscommander-cert-prod.env.yaml
-kubectl apply --namespace wave  -f ./wave/dev-rediscommander-cert-prod.env.yaml
 
 cat ./wave/rediscommander.deploy.tmpl.yaml | envsubst > ./wave/rediscommander.deploy.env.yaml
 kubectl apply --namespace wave -f ./wave/rediscommander.deploy.env.yaml

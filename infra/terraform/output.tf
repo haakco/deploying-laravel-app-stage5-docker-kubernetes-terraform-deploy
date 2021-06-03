@@ -30,3 +30,7 @@ data "template_file" "kube_doct_config" {
 output "kube_doct_config" {
   value = data.template_file.kube_doct_config.rendered
 }
+
+//output "traefik-ipv4" {
+//  value = data.kubernetes_service.traefik.status.0.load_balancer.0.ingress.0.ip
+//}

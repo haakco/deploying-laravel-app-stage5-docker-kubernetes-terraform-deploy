@@ -23,15 +23,6 @@ spec:
   basicAuth:
     secret: traefik-authsecret
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: traefik-authsecret
-  namespace: traefik
-data:
-  users: $TRAEFIK_AUTH
-type: Opaque
----
 # Enable gzip compression
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
@@ -52,13 +43,14 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.middlewares: traefik-traefik-auth@kubernetescrd,traefik-traefik-compress@kubernetescrd
     cert-manager.io/cluster-issuer: letsencrypt-production
+    external-dns.alpha.kubernetes.io/hostname: "traefik.${dns_domain}"
 spec:
   tls:
     - hosts:
-        - traefik.$DOMAIN
+        - traefik.${dns_domain}
       secretName: traefik-cert-tls
   rules:
-    - host: traefik.$DOMAIN
+    - host: traefik.${dns_domain}
       http:
         paths:
           - path: /

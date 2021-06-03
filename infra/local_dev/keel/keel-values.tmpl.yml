@@ -1,6 +1,6 @@
 basicauth:
   enabled: true
-  user: $KEEL_USERNAME
-  password: $KEEL_PASSWD
+  user: $TRAEFIK_USERNAME
+  password: $TRAEFIK_PASSWD
 ingress:
   enabled: false

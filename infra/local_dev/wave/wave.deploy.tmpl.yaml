@@ -122,29 +122,51 @@ kind: Service
 metadata:
   name: wave-lv-example
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 80
       targetPort: 80
   selector:
     app: wave-lv-example
 ---
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
+kind: Ingress
+apiVersion: networking.k8s.io/v1
 metadata:
-  name: wave-traefik-ingress
+  name: wave-lv-example
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-traefik-compress@kubernetescrd
+    cert-manager.io/cluster-issuer: letsencrypt-production
+#    traefik.ingress.kubernetes.io/redirect-regex: "^https://www.$DOMAIN/(.*)"
+#    traefik.ingress.kubernetes.io/redirect-replacement: "https://$DOMAIN/$1"
 spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`$DOMAIN`, `www.$DOMAIN`)
-      kind: Rule
-      services:
-        - name: wave-lv-example
-          port: 80
-      middlewares:
-        - name: traefik-compress
-          namespace: traefik
   tls:
-    secretName: dev-wave-cert-prod-tls
+    - hosts:
+        - $DOMAIN
+        - www.$DOMAIN
+      secretName: wave-cert-tls
+  rules:
+    - host: $DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wave-lv-example
+                port:
+                  number: 80
+    - host: www.$DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wave-lv-example
+                port:
+                  number: 80
+
 

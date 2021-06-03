@@ -10,14 +10,15 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.middlewares: traefik-traefik-auth@kubernetescrd,traefik-traefik-compress@kubernetescrd
     cert-manager.io/cluster-issuer: letsencrypt-production
+    external-dns.alpha.kubernetes.io/hostname: "prometheus.${dns_domain}, alertmanager.${dns_domain}"
 spec:
   tls:
     - hosts:
-        - prometheus.$DOMAIN
-        - alertmanager.$DOMAIN
+        - prometheus.${dns_domain}
+        - alertmanager.${dns_domain}
       secretName: prometheus-cert-tls
   rules:
-    - host: prometheus.$DOMAIN
+    - host: prometheus.${dns_domain}
       http:
         paths:
           - path: /
@@ -27,7 +28,7 @@ spec:
                 name: prometheus-operated
                 port:
                   number: 9090
-    - host: alertmanager.$DOMAIN
+    - host: alertmanager.${dns_domain}
       http:
         paths:
           - path: /
@@ -49,13 +50,14 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.middlewares: traefik-traefik-compress@kubernetescrd
     cert-manager.io/cluster-issuer: letsencrypt-production
+    external-dns.alpha.kubernetes.io/hostname: "grafana.${dns_domain}"
 spec:
   tls:
     - hosts:
-        - grafana.$DOMAIN
+        - grafana.${dns_domain}
       secretName: grafana-cert-tls
   rules:
-    - host: grafana.$DOMAIN
+    - host: grafana.${dns_domain}
       http:
         paths:
           - path: /

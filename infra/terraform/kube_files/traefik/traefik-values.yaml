@@ -1,7 +1,12 @@
 ---
+deployment:
+  replicas: 1
 ports:
   traefik:
     expose: false
+metrics:
+  prometheus:
+    enabled: true
 additionalArguments:
   - "--api"
   - "--api.insecure=true"
@@ -9,6 +14,7 @@ additionalArguments:
   - "--log.level=INFO"
   - "--entrypoints.websecure.http.tls"
   - "--providers.kubernetesingress=true"
+  - "--providers.kubernetesIngress.ingressEndpoint.publishedService=traefik/traefik"
   - "--ping"
   - "--metrics.prometheus=true"
   - "--metrics.prometheus.addEntryPointsLabels=true"
@@ -43,6 +49,3 @@ additionalArguments:
   - "--accessLog.fields.headers.names.True-Client-IP=keep"
   - "--entrypoints.web.http.redirections.entrypoint.to=:443"
   - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-
-deployment:
-  replicas: 1

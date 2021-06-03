@@ -35,7 +35,7 @@ variable kubernetes_surge_upgrade {
 }
 
 variable kubernetes_min_nodes {
-  default = 2
+  default = 3
 }
 
 variable kubernetes_max_nodes {
