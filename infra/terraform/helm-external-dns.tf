@@ -83,11 +83,6 @@ resource "helm_release" "external-dns" {
   }
 
   set {
-    name = "metrics.serviceMonitor.enabled"
-    value = "true"
-  }
-
-  set {
     name = "policy"
     value = "sync"
   }
