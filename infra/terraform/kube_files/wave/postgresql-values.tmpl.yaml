@@ -1,0 +1,23 @@
+---
+image:
+  tag: 13
+  pullPolicy: Always
+postgresql:
+  replicaCount: ${wave_db_replica_count}
+  username: ${wave_db_user}
+#  existingSecret: wave-secrets
+  database: ${wave_db_name}
+  password: ${wave_db_password}
+  repmgrPassword: ${wave_db_repmgr_password}
+metrics:
+  enabled: true
+persistence:
+  enabled: true
+  resourcePolicy: keep
+  storageClassName: do-block-storage
+  accessModes: [ "ReadWriteOnce" ]
+  size: 5Gi
+service:
+  type: ClusterIP
+pgpool:
+  adminPassword: ${wave_db_pgpool_admin_password}

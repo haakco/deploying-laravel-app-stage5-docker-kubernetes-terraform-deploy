@@ -18,6 +18,7 @@ helm upgrade \
   --install \
   wave-postgresql \
   --namespace wave \
+  --version 10.4.8 \
   -f ./wave/postgresql-values.env.yaml \
   bitnami/postgresql
 
@@ -30,6 +31,7 @@ helm upgrade \
   --install \
   wave-redis \
   --namespace wave \
+  --version 14.3.3 \
   -f ./wave/redis-values.env.yaml \
   bitnami/redis
 
@@ -67,3 +69,9 @@ kubectl apply --namespace wave -f ./wave/rediscommander.deploy.env.yaml
 #cd /var/www/site
 #php artisan migrate
 #php artisan db:seed
+
+echo 'kubectl exec --tty --namespace wave -i $(kubectl get pods --namespace wave | grep wave-lv-example | awk '"'"'{print $1}'"'"'} -- bash -c '"'"'su - www-data'"'"
+echo ""
+echo "cd /var/www/site"
+echo "php artisan migrate"
+echo "php artisan db:seed"

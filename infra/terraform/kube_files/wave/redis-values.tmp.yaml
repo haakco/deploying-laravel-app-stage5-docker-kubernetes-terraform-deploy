@@ -1,0 +1,16 @@
+---
+architecture: replication
+replica:
+  replicaCount: ${wave_redis_replica_count}
+image:
+  pullPolicy: Always
+auth:
+  existingSecret: wave-secrets
+  existingSecretPasswordKey: redis-password
+master:
+  enabled: true
+  existingClaim: postgres-pvc
+  resourcePolicy: keep
+  storageClassName: do-block-storage
+  accessModes: [ "ReadWriteOnce" ]
+  size: 5Gi

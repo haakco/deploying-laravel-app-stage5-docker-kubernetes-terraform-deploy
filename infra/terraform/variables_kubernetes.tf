@@ -1,3 +1,9 @@
+variable "traefik_username" {
+}
+
+variable "traefik_password" {
+}
+
 variable "traefik_auth" {
 }
 

@@ -1,0 +1,6 @@
+basicauth:
+  enabled: true
+  user: ${traefik_username}
+  password: ${traefik_password}
+ingress:
+  enabled: false

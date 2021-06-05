@@ -305,16 +305,6 @@ dns-secrets.yaml
 *secret.yml
 cloudflare-apikey-secret.yaml
 
-
-prometheus-ingres.yaml
-traefik-ingres.yaml
-postgresql-values.yaml
-redis-values.yaml
-wave.yaml
-wave.deploy.yaml
-dev-prometheus-cert.yaml
-dev-traefik-cert.yaml
-dev-wave-cert-prod.yaml
 deploy_id_ed25519
 deploy_id_ed25519.pub
 

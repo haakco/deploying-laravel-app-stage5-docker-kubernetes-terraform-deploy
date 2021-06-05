@@ -9,7 +9,7 @@ resource "kubernetes_namespace" "monitoring" {
 }
 
 data "template_file" "prometheus_operator_values" {
-  template = file("./kube_files/prometheus/prometheus-values.tmpl.yaml")
+  template = file("./kube_files/monitoring/prometheus-values.tmpl.yaml")
   vars = {
     grafana_admin_password = var.grafana_admin_password
     dns_domain = var.dns_domain
@@ -40,7 +40,7 @@ resource "kubernetes_ingress" "prometheus-ingres" {
       "kubernetes.io/ingress.class" = "traefik"
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
       "traefik.ingress.kubernetes.io/router.tls" = "true"
-      "traefik.ingress.kubernetes.io/router.middlewares" = "traefik-traefik-auth@kubernetescrd,traefik-traefik-compress@kubernetescrd"
+      "traefik.ingress.kubernetes.io/router.middlewares" = "traefik-traefik-compress@kubernetescrd,traefik-traefik-auth@kubernetescrd"
       "cert-manager.io/cluster-issuer" = "letsencrypt-production"
       "external-dns.alpha.kubernetes.io/hostname" = "prometheus.${var.dns_domain}, alertmanager.${var.dns_domain}"
     }
@@ -130,21 +130,3 @@ resource "kubernetes_ingress" "grafana-ingres" {
     helm_release.traefik,
   ]
 }
-
-//data "template_file" "prometheus-ingres" {
-//  template = file("./kube_files/prometheus/prometheus-ingres.tmpl.yaml")
-//  vars = {
-//    dns_domain = var.dns_domain
-//  }
-//}
-//
-//resource "kubectl_manifest" "prometheus-ingres" {
-//  override_namespace = "monitoring"
-//  yaml_body = data.template_file.prometheus-ingres.rendered
-//  depends_on = [
-//    kubernetes_namespace.traefik,
-//    helm_release.traefik,
-//    helm_release.prometheus-operator,
-//    helm_release.cert-manager,
-//  ]
-//}

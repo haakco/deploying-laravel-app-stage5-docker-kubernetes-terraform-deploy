@@ -29,6 +29,10 @@ spec:
           ports:
             - containerPort: 80
           env:
+            - name: ENABLE_HORIZON
+              value: "TRUE"
+            - name: CRONTAB_ACTIVE
+              value: "TRUE"
             - name: GEN_LV_ENV
               value: "TRUE"
             - name: LVENV_APP_NAME
@@ -139,8 +143,8 @@ metadata:
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.middlewares: traefik-traefik-compress@kubernetescrd
     cert-manager.io/cluster-issuer: letsencrypt-production
-#    traefik.ingress.kubernetes.io/redirect-regex: "^https://www.$DOMAIN/(.*)"
-#    traefik.ingress.kubernetes.io/redirect-replacement: "https://$DOMAIN/$1"
+    traefik.ingress.kubernetes.io/redirect-regex: "^https://www.$DOMAIN/(.*)"
+    traefik.ingress.kubernetes.io/redirect-replacement: "https://$DOMAIN/$1"
 spec:
   tls:
     - hosts:
@@ -168,5 +172,3 @@ spec:
                 name: wave-lv-example
                 port:
                   number: 80
-
-
