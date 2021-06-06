@@ -1,0 +1,18 @@
+replicas: 1
+minimumMasterNodes: 1
+rbac:
+  create: true
+antiAffinity: "soft"
+resources:
+requests:
+  cpu: "100m"
+  memory: "1500M"
+limits:
+  cpu: "1000m"
+  memory: "1500M"
+esJavaOpts: "-Xmx1024m -Xms1024m"
+volumeClaimTemplate:
+  accessModes: [ "ReadWriteOnce" ]
+  resources:
+    requests:
+      storage: 10Gi

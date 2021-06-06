@@ -30,7 +30,7 @@ spec:
             - containerPort: 80
           env:
             - name: ENABLE_HORIZON
-              value: "TRUE"
+              value: "FALSE"
             - name: CRONTAB_ACTIVE
               value: "TRUE"
             - name: GEN_LV_ENV

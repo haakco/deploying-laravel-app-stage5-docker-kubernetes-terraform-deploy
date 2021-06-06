@@ -1,20 +1,24 @@
+locals {
+  cert_manager_name_space = "cert-manager"
+}
+
 resource "kubernetes_namespace" "cert-manager" {
   metadata {
     annotations = {
-      name = "cert-manager"
+      name = local.cert_manager_name_space
     }
 
     labels = {
       "certmanager.k8s.io/disable-validation" = "true"
     }
 
-    name = "cert-manager"
+    name = local.cert_manager_name_space
   }
 }
 
 resource "helm_release" "cert-manager" {
   name = "cert-manager"
-  namespace = "cert-manager"
+  namespace = local.cert_manager_name_space
   repository = "https://charts.jetstack.io"
   chart = "cert-manager"
   version = "1.3.1"
@@ -43,7 +47,7 @@ resource "helm_release" "cert-manager" {
 resource "kubernetes_secret" "cert-manager-cloudflare-api-token" {
   metadata {
     name = "cloudflare-apikey"
-    namespace = "cert-manager"
+    namespace = local.cert_manager_name_space
   }
 
   data = {
@@ -51,21 +55,26 @@ resource "kubernetes_secret" "cert-manager-cloudflare-api-token" {
   }
 
   type = "Opaque"
+  depends_on = [
+    kubernetes_namespace.cert-manager,
+  ]
 }
 
 resource "kubectl_manifest" "acme-prod-config" {
-  override_namespace = "cert-manager"
+  override_namespace = local.cert_manager_name_space
   yaml_body = file("./kube_files/cert/acme-production.yaml")
   depends_on = [
+    kubernetes_namespace.cert-manager,
     helm_release.cert-manager,
     kubernetes_secret.cert-manager-cloudflare-api-token,
   ]
 }
 
 resource "kubectl_manifest" "acme-staging-config" {
-  override_namespace = "cert-manager"
+  override_namespace = local.cert_manager_name_space
   yaml_body = file("./kube_files/cert/acme-staging.yaml")
   depends_on = [
+    kubernetes_namespace.cert-manager,
     helm_release.cert-manager,
     kubernetes_secret.cert-manager-cloudflare-api-token,
   ]

@@ -1,10 +1,13 @@
+locals {
+  monitoring_name_space = "monitoring"
+}
+
 resource "kubernetes_namespace" "monitoring" {
   metadata {
     annotations = {
-      name = "monitoring"
+      name = local.monitoring_name_space
     }
-
-    name = "monitoring"
+    name = local.monitoring_name_space
   }
 }
 
@@ -18,7 +21,7 @@ data "template_file" "prometheus_operator_values" {
 
 resource "helm_release" "prometheus-operator" {
   name = "prometheus-operator"
-  namespace = "monitoring"
+  namespace = local.monitoring_name_space
   repository = "https://prometheus-community.github.io/helm-charts"
   chart = "kube-prometheus-stack"
   version = "16.1.0"
@@ -35,7 +38,7 @@ resource "helm_release" "prometheus-operator" {
 resource "kubernetes_ingress" "prometheus-ingres" {
   metadata {
     name = "prometheus"
-    namespace = "monitoring"
+    namespace = local.monitoring_name_space
     annotations = {
       "kubernetes.io/ingress.class" = "traefik"
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
@@ -91,7 +94,7 @@ resource "kubernetes_ingress" "prometheus-ingres" {
 resource "kubernetes_ingress" "grafana-ingres" {
   metadata {
     name = "grafana"
-    namespace = "monitoring"
+    namespace = local.monitoring_name_space
     annotations = {
       "kubernetes.io/ingress.class" = "traefik"
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
@@ -129,4 +132,24 @@ resource "kubernetes_ingress" "grafana-ingres" {
     helm_release.cert-manager,
     helm_release.traefik,
   ]
+}
+
+resource "helm_release" "kubernetes-dashboard" {
+  name = "kubernetes-dashboard"
+  namespace = local.monitoring_name_space
+  repository = "https://kubernetes.github.io/dashboard"
+  chart = "kubernetes-dashboard"
+  version = "4.2.0"
+  set {
+    name  = "metricsScraper.enabled"
+    value = "true"
+  }
+  set {
+    name  = "metrics-server.enabled"
+    value = "true"
+  }
+  set {
+    name  = "metrics-server.args"
+    value = "{--kubelet-preferred-address-types=InternalIP}"
+  }
 }

@@ -1,13 +1,13 @@
 variable "wave_app_replicas" {
-  default = 3
-}
-
-variable "wave_db_replica_count" {
   default = 2
 }
 
+variable "wave_db_replica_count" {
+  default = 1
+}
+
 variable "wave_redis_replica_count" {
-  default = 3
+  default = 2
 }
 
 variable "wave_db_name" {

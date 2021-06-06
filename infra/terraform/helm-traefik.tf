@@ -1,16 +1,19 @@
+locals {
+  traefik_name_space = "traefik"
+}
+
 resource "kubernetes_namespace" "traefik" {
   metadata {
     annotations = {
-      name = "traefik"
+      name = local.traefik_name_space
     }
-
-    name = "traefik"
+    name = local.traefik_name_space
   }
 }
 
 resource "helm_release" "traefik" {
   name = "traefik"
-  namespace = "traefik"
+  namespace = local.traefik_name_space
   repository = "https://containous.github.io/traefik-helm-chart"
   chart = "traefik"
   version = "9.1.1"
@@ -27,7 +30,7 @@ resource "helm_release" "traefik" {
 resource "kubernetes_secret" "traefik_auth" {
   metadata {
     name = "traefik-authsecret"
-    namespace = "traefik"
+    namespace = local.traefik_name_space
   }
 
   data = {
@@ -44,7 +47,7 @@ resource "kubernetes_secret" "traefik_auth" {
 resource "kubernetes_service" "traefik-web-ui" {
   metadata {
     name = "traefik-web-ui"
-    namespace = "traefik"
+    namespace = local.traefik_name_space
   }
   spec {
     selector = {
@@ -65,7 +68,7 @@ resource "kubernetes_service" "traefik-web-ui" {
 }
 
 resource "kubectl_manifest" "traefik-middleware-auth" {
-  override_namespace = "traefik"
+  override_namespace = local.traefik_name_space
   yaml_body = file("./kube_files/traefik/traefik-middleware-auth.yaml")
   depends_on = [
     kubernetes_namespace.traefik,
@@ -74,7 +77,7 @@ resource "kubectl_manifest" "traefik-middleware-auth" {
 }
 
 resource "kubectl_manifest" "traefik-middleware-compress" {
-  override_namespace = "traefik"
+  override_namespace = local.traefik_name_space
   yaml_body = file("./kube_files/traefik/traefik-middleware-compress.yaml")
   depends_on = [
     kubernetes_namespace.traefik,
@@ -85,7 +88,7 @@ resource "kubectl_manifest" "traefik-middleware-compress" {
 resource "kubernetes_ingress" "traefik-ingres" {
   metadata {
     name = "traefik"
-    namespace = "traefik"
+    namespace = local.traefik_name_space
     annotations = {
       "kubernetes.io/ingress.class" = "traefik"
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"

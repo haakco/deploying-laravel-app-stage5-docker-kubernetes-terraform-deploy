@@ -23,7 +23,8 @@ variable kubernetes_cluster_autoscale_pool_name {
 }
 
 variable server_size {
-  default = "s-2vcpu-4gb"
+//  default = "s-2vcpu-4gb"
+    default = "s-4vcpu-8gb"
 }
 
 variable kubernetes_auto_scale {

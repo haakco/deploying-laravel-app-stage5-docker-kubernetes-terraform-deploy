@@ -1,3 +1,16 @@
+locals {
+  keel_name_space = "keel"
+}
+
+resource "kubernetes_namespace" "keel" {
+  metadata {
+    annotations = {
+      name = local.keel_name_space
+    }
+    name = local.keel_name_space
+  }
+}
+
 data "template_file" "keel_values" {
   template = file("./kube_files/keel/keel-values.tmpl.yml")
   vars = {
@@ -8,19 +21,23 @@ data "template_file" "keel_values" {
 
 resource "helm_release" "keel" {
   name = "keel"
-  namespace = "kube-system"
+  namespace = local.keel_name_space
   repository = "https://charts.keel.sh"
   chart = "keel"
   version = "0.9.8"
   values = [
     data.template_file.keel_values.rendered
   ]
+
+  depends_on = [
+    kubernetes_namespace.keel,
+  ]
 }
 
 resource "kubernetes_ingress" "keel-ingres" {
   metadata {
     name = "keel"
-    namespace = "kube-system"
+    namespace = local.keel_name_space
     annotations = {
       "kubernetes.io/ingress.class" = "traefik"
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
@@ -52,9 +69,11 @@ resource "kubernetes_ingress" "keel-ingres" {
     }
   }
   depends_on = [
+    kubernetes_namespace.keel,
     kubectl_manifest.traefik-middleware-auth,
     kubectl_manifest.traefik-middleware-compress,
     helm_release.cert-manager,
     helm_release.traefik,
+    helm_release.keel,
   ]
 }

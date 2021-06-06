@@ -1,17 +1,21 @@
+locals {
+  external_dns_name_space = "external-dns"
+}
+
 resource "kubernetes_namespace" "external-dns" {
   metadata {
     annotations = {
-      name = "external-dns"
+      name = local.external_dns_name_space
     }
 
-    name = "external-dns"
+    name = local.external_dns_name_space
   }
 }
 
 resource "kubernetes_secret" "external-dns-cloudflare-api-token" {
   metadata {
     name = "cloudflare-apikey"
-    namespace = "external-dns"
+    namespace = local.external_dns_name_space
   }
 
   data = {
@@ -23,7 +27,7 @@ resource "kubernetes_secret" "external-dns-cloudflare-api-token" {
 
 resource "helm_release" "external-dns" {
   name = "external-dns"
-  namespace = "external-dns"
+  namespace = local.external_dns_name_space
   repository = "https://charts.bitnami.com/bitnami"
   chart = "external-dns"
   version = "5.0.2"

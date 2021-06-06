@@ -1,21 +1,21 @@
 locals {
-  name_space = "wave"
+  wave_name_space = "wave"
 }
 
 resource "kubernetes_namespace" "wave_name_space" {
   metadata {
     annotations = {
-      name = local.name_space
+      name = local.wave_name_space
     }
 
-    name = local.name_space
+    name = local.wave_name_space
   }
 }
 
 resource "kubernetes_secret" "wave-secrets" {
   metadata {
     name = "wave-secrets"
-    namespace = local.name_space
+    namespace = local.wave_name_space
   }
 
   data = {
@@ -43,7 +43,7 @@ data "template_file" "wave_postgres" {
 
 resource "helm_release" "wave-postgresql-ha" {
   name = "postgresql-ha"
-  namespace = local.name_space
+  namespace = local.wave_name_space
   repository = "https://charts.bitnami.com/bitnami"
   chart = "postgresql-ha"
   version = "7.6.0"
@@ -55,6 +55,7 @@ resource "helm_release" "wave-postgresql-ha" {
   depends_on = [
     kubernetes_namespace.wave_name_space,
     kubernetes_secret.wave-secrets,
+    helm_release.elastic,
   ]
 }
 
@@ -67,7 +68,7 @@ data "template_file" "wave_redis" {
 
 resource "helm_release" "wave-redis" {
   name = "redis"
-  namespace = local.name_space
+  namespace = local.wave_name_space
   repository = "https://charts.bitnami.com/bitnami"
   chart = "redis"
   version = "14.3.3"
@@ -79,13 +80,14 @@ resource "helm_release" "wave-redis" {
   depends_on = [
     kubernetes_namespace.wave_name_space,
     kubernetes_secret.wave-secrets,
+    helm_release.elastic,
   ]
 }
 
 resource "kubernetes_deployment" "wave-lv-example" {
   metadata {
     name = "wave-lv-example"
-    namespace = local.name_space
+    namespace = local.wave_name_space
     annotations = {
       "keel.sh/policy": "force"
       "keel.sh/trigger": "poll"
@@ -173,7 +175,7 @@ resource "kubernetes_deployment" "wave-lv-example" {
 
           env {
             name = "ENABLE_HORIZON"
-            value = "TRUE"
+            value = "FALSE"
           }
 
           env {
@@ -330,14 +332,15 @@ resource "kubernetes_deployment" "wave-lv-example" {
     kubernetes_namespace.wave_name_space,
     kubernetes_secret.wave-secrets,
     helm_release.wave-postgresql-ha,
-    helm_release.wave-redis
+    helm_release.wave-redis,
+    helm_release.elastic,
   ]
 }
 
 resource "kubernetes_service" "wave-lv-example" {
   metadata {
     name = "wave-lv-example"
-    namespace = local.name_space
+    namespace = local.wave_name_space
   }
   spec {
     selector = {
@@ -355,14 +358,14 @@ resource "kubernetes_service" "wave-lv-example" {
     kubernetes_secret.wave-secrets,
     helm_release.wave-postgresql-ha,
     helm_release.wave-redis,
-    kubernetes_deployment.wave-lv-example
+    kubernetes_deployment.wave-lv-example,
   ]
 }
 
 resource "kubernetes_ingress" "wave-lv-example-ingres" {
   metadata {
     name = "wave-lv-example"
-    namespace = local.name_space
+    namespace = local.wave_name_space
     annotations = {
       "kubernetes.io/ingress.class" = "traefik"
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
@@ -414,6 +417,6 @@ resource "kubernetes_ingress" "wave-lv-example-ingres" {
     helm_release.wave-postgresql-ha,
     helm_release.wave-redis,
     kubernetes_deployment.wave-lv-example,
-    kubernetes_service.wave-lv-example
+    kubernetes_service.wave-lv-example,
   ]
 }

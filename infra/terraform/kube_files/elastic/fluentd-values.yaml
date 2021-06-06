@@ -1,0 +1,9 @@
+metrics:
+  enabled: "true"
+aggregator:
+  configMap: "elasticsearch-output"
+  extraEnv:
+    - name: "ELASTICSEARCH_HOST"
+      value: "elasticsearch-master"
+    - name: "ELASTICSEARCH_PORT"
+      value: "9200"
