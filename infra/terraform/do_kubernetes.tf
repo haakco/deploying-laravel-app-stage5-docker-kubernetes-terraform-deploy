@@ -16,7 +16,7 @@ resource "digitalocean_kubernetes_cluster" "example" {
     auto_scale = var.kubernetes_auto_scale
     min_nodes  = var.kubernetes_min_nodes
     max_nodes  = var.kubernetes_max_nodes
-    node_count = var.kubernetes_default_nodes
+//    node_count = var.kubernetes_default_nodes
     tags = [digitalocean_tag.expose-lb.id]
   }
 }

@@ -402,13 +402,14 @@ resource "kubernetes_ingress" "wave-lv-example-ingres" {
       "traefik.ingress.kubernetes.io/router.middlewares" = "traefik-traefik-compress@kubernetescrd"
       "cert-manager.io/cluster-issuer" = "letsencrypt-production"
       "external-dns.alpha.kubernetes.io/hostname" = "${var.dns_domain},www.${var.dns_domain}"
-      "traefik.ingress.kubernetes.io/redirect-regex" = "^https://www.$DOMAIN/(.*)"
-      "traefik.ingress.kubernetes.io/redirect-replacement" = "https://$DOMAIN/$1"
+      "traefik.ingress.kubernetes.io/redirect-regex" = "^https://www.${var.dns_domain}/(.*)"
+      "traefik.ingress.kubernetes.io/redirect-replacement" = "https://${var.dns_domain}/$1"
     }
   }
 
   spec {
     rule {
+//      host = "@.${var.dns_domain}"
       host = var.dns_domain
       http {
         path {

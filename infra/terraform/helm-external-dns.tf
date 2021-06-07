@@ -33,7 +33,7 @@ resource "helm_release" "external-dns" {
   namespace = local.external_dns_name_space
   repository = "https://charts.bitnami.com/bitnami"
   chart = "external-dns"
-  version = "5.0.2"
+  version = "5.0.3"
 
 //  values = [
 //    data.template_file.prometheus_operator_values.rendered
@@ -51,6 +51,7 @@ resource "helm_release" "external-dns" {
 
   set {
     name = "registry"
+//    value = "noop"
     value = "txt"
   }
 
@@ -61,7 +62,7 @@ resource "helm_release" "external-dns" {
 
   set {
     name = "txtPrefix"
-    value = "lvexample"
+    value = "lvexample."
   }
 
   set {

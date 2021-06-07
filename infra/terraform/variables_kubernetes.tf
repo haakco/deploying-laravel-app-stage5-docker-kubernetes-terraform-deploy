@@ -1,8 +1,6 @@
-
-
-variable kubernetes_default_nodes {
-  default = 1
-}
+//variable kubernetes_default_nodes {
+//  default = 1
+//}
 
 variable kubernetes_min_nodes {
   default = 1
@@ -13,9 +11,8 @@ variable kubernetes_max_nodes {
 }
 
 variable server_size {
-  //  default = "s-2vcpu-4gb"
+  default = "s-2vcpu-4gb"
   //    default = "s-4vcpu-8gb"
-  default = "s-6vcpu-16gb"
 }
 
 variable kubernetes_version {
