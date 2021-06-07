@@ -78,7 +78,7 @@ export MAIL_ENCRYPTION=null
 export TRUSTED_PROXIES='10.0.0.0/8,172.16.0.0./12,192.168.0.0/16'
 export JWT_SECRET=Jrsweag3Mf0srOqDizRkhjWm5CEFcrBy
 
-WAVE_DIR=$(realpath "${PWD}/stage3-ubuntu-20.04-php7.4-lv-wave")
+WAVE_DIR=$(realpath "${PWD}/../../../deploying-laravel-app-ubuntu-20.04-php7.4-lv-wave")
 export WAVE_DIR
 
 cat ./wave/wave.deploy.tmpl.yaml | envsubst > ./wave/wave.deploy.env.yaml
