@@ -23,6 +23,9 @@ resource "kubernetes_secret" "external-dns-cloudflare-api-token" {
   }
 
   type = "Opaque"
+  depends_on = [
+    kubernetes_namespace.external-dns,
+  ]
 }
 
 resource "helm_release" "external-dns" {
