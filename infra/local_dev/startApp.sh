@@ -11,7 +11,30 @@ export DB_USER=user_example
 export DB_PASS=password_example
 export DB_EXTERNAL_PORT=30432
 
+if [[ -z ${REGISTRY_USERNAME} ]] ; then
+  echo "Please enter the REGISTRY_USERNAME or set the env variable: "
+  read -r REGISTRY_USERNAME
+else
+  echo "Read REGISTRY_USERNAME from env"
+fi
+
+if [[ -z ${REGISTRY_PASSWORD} ]] ; then
+  echo "Please enter the REGISTRY_PASSWORD or set the env variable: "
+  read -r REGISTRY_PASSWORD
+else
+  echo "Read REGISTRY_PASSWORD from env"
+fi
+
 kubectl apply --namespace wave -f ./wave/postgresql-pvc.yaml
+
+kubectl \
+  --namespace wave \
+  create secret \
+  docker-registry "docker-hub" \
+  --docker-server="https://index.docker.io/v2/" \
+  --docker-username="${REGISTRY_USERNAME}" \
+  --docker-password="${REGISTRY_PASSWORD}" \
+  --docker-email=""
 
 cat ./wave/postgresql-values.tmpl.yaml | envsubst > ./wave/postgresql-values.env.yaml
 helm upgrade \

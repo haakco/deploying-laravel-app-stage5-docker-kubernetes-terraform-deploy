@@ -19,6 +19,9 @@ export TF_VAR_traefik_auth
 export TF_VAR_cloudflare_api_token=${CLOUDFLARE_API_TOKEN}
 export TF_VAR_grafana_admin_password=${GRAFANA_ADMIN_PASSWORD}
 
+export TF_VAR_wave_registry_username=${REGISTRY_USERNAME}
+export TF_VAR_wave_registry_password=${REGISTRY_PASSWORD}
+
 terraform apply -refresh=true -parallelism=10
 
 #kubectl exec --tty --namespace wave -i $(kubectl get pods --namespace wave --field-selector status.phase=Running | grep wave-lv-example | head -n 1 | awk '{print $1}') -- bash -c 'su - www-data'

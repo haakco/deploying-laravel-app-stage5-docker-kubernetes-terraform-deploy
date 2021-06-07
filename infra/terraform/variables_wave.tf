@@ -1,3 +1,13 @@
+variable "wave_registry_server" {
+  default = "https://index.docker.io/v2/"
+}
+
+variable "wave_registry_username" {
+}
+
+variable "wave_registry_password" {
+}
+
 variable "wave_app_replicas" {
   default = 2
 }

@@ -23,9 +23,11 @@ spec:
       labels:
         app: wave-lv-example
     spec:
+      imagePullSecrets:
+        - name: docker-hub
       containers:
         - name: wave-lv-example
-          image: haakco/stage3-ubuntu-20.04-php7.4-lv
+          image: haakco/deploying-laravel-app-ubuntu-20.04-php7.4-lv
           ports:
             - containerPort: 80
           env:

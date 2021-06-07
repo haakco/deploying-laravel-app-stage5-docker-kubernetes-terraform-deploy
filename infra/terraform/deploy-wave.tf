@@ -12,6 +12,29 @@ resource "kubernetes_namespace" "wave_name_space" {
   }
 }
 
+resource "kubernetes_secret" "wave_docker_registry_login" {
+  metadata {
+    name = "docker-registry-credential"
+  }
+
+  data = {
+    ".dockerconfigjson" = <<DOCKER
+{
+  "auths": {
+    "${var.wave_registry_server}": {
+      "auth": "${base64encode("${var.wave_registry_username}:${var.wave_registry_password}")}"
+    }
+  }
+}
+DOCKER
+  }
+
+  type = "kubernetes.io/dockerconfigjson"
+  depends_on = [
+    kubernetes_namespace.wave_name_space,
+  ]
+}
+
 resource "kubernetes_secret" "wave-secrets" {
   metadata {
     name = "wave-secrets"
@@ -27,6 +50,9 @@ resource "kubernetes_secret" "wave-secrets" {
   }
 
   type = "Opaque"
+  depends_on = [
+    kubernetes_namespace.wave_name_space,
+  ]
 }
 
 data "template_file" "wave_postgres" {
@@ -119,8 +145,11 @@ resource "kubernetes_deployment" "wave-lv-example" {
       }
 
       spec {
+        image_pull_secrets {
+          name = "docker-registry-credential"
+        }
         container {
-          image = "haakco/stage3-ubuntu-20.04-php7.4-lv-wave:latest"
+          image = "haakco/deploying-laravel-app-ubuntu-20.04-php7.4-lv-wave:latest"
           name = "wave-lv-example"
 
           port {

@@ -9,6 +9,8 @@ fi
 export TF_VAR_traefik_username=""
 export TF_VAR_traefik_password=""
 export TF_VAR_traefik_auth=""
+export TF_VAR_wave_registry_username=""
+export TF_VAR_wave_registry_password=""
 
 export TF_VAR_grafana_admin_password=""
-terraform destroy -refresh=true -parallelism=10
+terraform destroy -refresh=false -parallelism=1

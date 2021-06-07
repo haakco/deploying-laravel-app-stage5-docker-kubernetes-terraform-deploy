@@ -1,6 +1,5 @@
 //#===K8TESTCLUSTER KUBERNETES===============================================
 provider "kubernetes" {
-
   host             = digitalocean_kubernetes_cluster.example.endpoint
   token            = digitalocean_kubernetes_cluster.example.kube_config[0].token
 
@@ -43,4 +42,3 @@ resource "kubernetes_cluster_role_binding" "dashboard-admin-clusterrolebinding" 
     api_group = "rbac.authorization.k8s.io"
   }
 }
-
