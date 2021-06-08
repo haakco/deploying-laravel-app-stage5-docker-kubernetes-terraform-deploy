@@ -11,6 +11,7 @@ fi
 export CLOUDFLARE_API_TOKEN
 
 export DOMAIN=dev.custd.com
+export CERT_EMAIL="cert@${DOMAIN}"
 export TRAEFIK_USERNAME='traefik'
 export TRAEFIK_PASSWD='yairohchahKoo0haem0d'
 export GRAFANA_ADMIN_PASSWORD=example_password
@@ -82,8 +83,11 @@ rm -rf ./cloudflare-apikey-secret.env.yaml
 
 sleep 2
 
-kubectl apply --namespace cert-manager -f ./cert/acme-production.yaml
-kubectl apply --namespace cert-manager  -f ./cert/acme-staging.yaml
+cat ./cert/acme-dns-production.tmpl.yaml | envsubst > ./cert/acme-dns-production.env.yaml
+kubectl apply --namespace cert-manager -f ./cert/acme-dns-production.env.yaml
+
+cat ./cert/acme-dns-staging.tmpl.yaml | envsubst > ./cert/acme-dns-staging.env.yaml
+kubectl apply --namespace cert-manager  -f ./cert/acme-dns-staging.env.yaml
 
 helm repo add traefik https://containous.github.io/traefik-helm-chart
 helm repo update

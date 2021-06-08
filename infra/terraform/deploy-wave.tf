@@ -142,6 +142,12 @@ resource "kubernetes_deployment" "wave-lv-example" {
         labels = {
           app = "wave-lv-example"
         }
+        annotations = {
+          "co.elastic.logs/enabled" = "true"
+          "co.elastic.logs/json.keys_under_root" = "true"
+          "co.elastic.logs/json.message_key" = "message"
+          "co.elastic.logs/json.overwrite_keys" = "true"
+        }
       }
 
       spec {
@@ -400,7 +406,7 @@ resource "kubernetes_ingress" "wave-lv-example-ingres" {
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
       "traefik.ingress.kubernetes.io/router.tls" = "true"
       "traefik.ingress.kubernetes.io/router.middlewares" = "traefik-traefik-compress@kubernetescrd"
-      "cert-manager.io/cluster-issuer" = "letsencrypt-production"
+      "cert-manager.io/cluster-issuer" = "letsencrypt-dns-production"
       "external-dns.alpha.kubernetes.io/hostname" = "${var.dns_domain},www.${var.dns_domain}"
       "traefik.ingress.kubernetes.io/redirect-regex" = "^https://www.${var.dns_domain}/(.*)"
       "traefik.ingress.kubernetes.io/redirect-replacement" = "https://${var.dns_domain}/$1"

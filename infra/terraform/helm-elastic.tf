@@ -58,7 +58,7 @@ resource "kubernetes_ingress" "elastic-ingres" {
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
       "traefik.ingress.kubernetes.io/router.tls" = "true"
       "traefik.ingress.kubernetes.io/router.middlewares" = "traefik-traefik-compress@kubernetescrd,traefik-traefik-auth@kubernetescrd"
-      "cert-manager.io/cluster-issuer" = "letsencrypt-production"
+      "cert-manager.io/cluster-issuer" = "letsencrypt-dns-production"
       "external-dns.alpha.kubernetes.io/hostname" = "kibana.${var.dns_domain}"
     }
   }
@@ -92,34 +92,6 @@ resource "kubernetes_ingress" "elastic-ingres" {
   ]
 }
 
-//resource "kubernetes_config_map" "fluentd" {
-//  metadata {
-//    name = "elasticsearch-output"
-//    namespace = local.elastic_name_space
-//  }
-//
-//  data = {
-//    "fluentd.conf" = file("./kube_files/elastic/fluentd.conf")
-//  }
-//}
-
-//resource "helm_release" "fluentd" {
-//  name = "fluentd"
-//  namespace = local.elastic_name_space
-//  repository = "https://charts.bitnami.com/bitnami"
-//  chart = "fluentd"
-//  version = "3.7.5"
-//
-//  values = [
-//    file("./kube_files/elastic/fluentd-values.yaml")
-//  ]
-//
-//  depends_on = [
-//    kubernetes_config_map.fluentd,
-//    helm_release.elastic,
-//  ]
-//}
-
 resource "helm_release" "metricbeat" {
   name = "metricbeat"
   namespace = local.elastic_name_space
@@ -138,6 +110,9 @@ resource "helm_release" "filebeat" {
   repository = "https://helm.elastic.co"
   chart = "filebeat"
   version = "7.13.1"
+  values = [
+    file("./kube_files/elastic/filebeat-values.yaml")
+  ]
   depends_on = [
     kubernetes_namespace.elastic,
     helm_release.elastic,

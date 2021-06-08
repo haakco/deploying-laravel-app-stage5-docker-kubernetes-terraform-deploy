@@ -1,0 +1,19 @@
+daemonset:
+  filebeatConfig:
+    filebeat.yml: |
+      setup:
+        dashboards:
+          enabled: true
+        kibana:
+          host: kibana-kibana:5601
+      filebeat.autodiscover:
+        providers:
+          - type: kubernetes
+            hints.enabled: true
+            hints.default_config:
+              type: container
+              paths:
+                - /var/log/containers/*${data.kubernetes.container.id}.log
+      output.elasticsearch:
+        host: '${NODE_NAME}'
+        hosts: '${ELASTICSEARCH_HOSTS:elasticsearch-master:9200}'

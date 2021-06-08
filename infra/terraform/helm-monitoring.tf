@@ -44,7 +44,7 @@ resource "kubernetes_ingress" "prometheus-ingres" {
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
       "traefik.ingress.kubernetes.io/router.tls" = "true"
       "traefik.ingress.kubernetes.io/router.middlewares" = "traefik-traefik-compress@kubernetescrd,traefik-traefik-auth@kubernetescrd"
-      "cert-manager.io/cluster-issuer" = "letsencrypt-production"
+      "cert-manager.io/cluster-issuer" = "letsencrypt-dns-production"
       "external-dns.alpha.kubernetes.io/hostname" = "prometheus.${var.dns_domain}, alertmanager.${var.dns_domain}"
     }
   }
@@ -100,7 +100,7 @@ resource "kubernetes_ingress" "grafana-ingres" {
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
       "traefik.ingress.kubernetes.io/router.tls" = "true"
       "traefik.ingress.kubernetes.io/router.middlewares" = "traefik-traefik-compress@kubernetescrd"
-      "cert-manager.io/cluster-issuer" = "letsencrypt-production"
+      "cert-manager.io/cluster-issuer" = "letsencrypt-dns-production"
       "external-dns.alpha.kubernetes.io/hostname" = "grafana.${var.dns_domain}"
     }
   }

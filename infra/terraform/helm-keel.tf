@@ -43,7 +43,7 @@ resource "kubernetes_ingress" "keel-ingres" {
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
       "traefik.ingress.kubernetes.io/router.tls" = "true"
       "traefik.ingress.kubernetes.io/router.middlewares" = "traefik-traefik-compress@kubernetescrd,traefik-traefik-auth@kubernetescrd"
-      "cert-manager.io/cluster-issuer" = "letsencrypt-production"
+      "cert-manager.io/cluster-issuer" = "letsencrypt-dns-production"
       "external-dns.alpha.kubernetes.io/hostname" = "keel.${var.dns_domain}"
     }
   }

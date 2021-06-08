@@ -2,6 +2,10 @@ locals {
   cert_manager_name_space = "cert-manager"
 }
 
+locals {
+  cert_email = "cert@${var.dns_domain}"
+}
+
 resource "kubernetes_namespace" "cert-manager" {
   metadata {
     annotations = {
@@ -14,6 +18,23 @@ resource "kubernetes_namespace" "cert-manager" {
 
     name = local.cert_manager_name_space
   }
+}
+
+resource "kubernetes_secret" "cert-manager-cloudflare-api-token" {
+  metadata {
+    name = "cloudflare-apikey"
+    namespace = local.cert_manager_name_space
+  }
+
+  data = {
+    cloudflare_api_token = var.cloudflare_api_token
+  }
+
+  type = "Opaque"
+  depends_on = [
+    kubernetes_namespace.cert-manager,
+    helm_release.cert-manager,
+  ]
 }
 
 resource "helm_release" "cert-manager" {
@@ -33,36 +54,22 @@ resource "helm_release" "cert-manager" {
     value = "true"
   }
 
-  set {
-    name = "prometheus.servicemonprometheus-values.env.yamlitor.enabled"
-    value = "true"
-  }
-
   depends_on = [
     kubernetes_namespace.cert-manager,
     helm_release.prometheus-operator,
   ]
 }
 
-resource "kubernetes_secret" "cert-manager-cloudflare-api-token" {
-  metadata {
-    name = "cloudflare-apikey"
-    namespace = local.cert_manager_name_space
+data "template_file" "acme_dns_production" {
+  template = file("./kube_files/cert/acme-dns-production.tmpl.yaml")
+  vars = {
+    cert_email = local.cert_email
   }
-
-  data = {
-    cloudflare_api_token = var.cloudflare_api_token
-  }
-
-  type = "Opaque"
-  depends_on = [
-    kubernetes_namespace.cert-manager,
-  ]
 }
 
-resource "kubectl_manifest" "acme-prod-config" {
+resource "kubectl_manifest" "acme-dns-prod-config" {
   override_namespace = local.cert_manager_name_space
-  yaml_body = file("./kube_files/cert/acme-production.yaml")
+  yaml_body = data.template_file.acme_dns_production.rendered
   depends_on = [
     kubernetes_namespace.cert-manager,
     helm_release.cert-manager,
@@ -70,9 +77,16 @@ resource "kubectl_manifest" "acme-prod-config" {
   ]
 }
 
-resource "kubectl_manifest" "acme-staging-config" {
+data "template_file" "acme_dns_staging" {
+  template = file("./kube_files/cert/acme-dns-staging.tmpl.yaml")
+  vars = {
+    cert_email = local.cert_email
+  }
+}
+
+resource "kubectl_manifest" "acme_dns_staging_config" {
   override_namespace = local.cert_manager_name_space
-  yaml_body = file("./kube_files/cert/acme-staging.yaml")
+  yaml_body = data.template_file.acme_dns_staging.rendered
   depends_on = [
     kubernetes_namespace.cert-manager,
     helm_release.cert-manager,

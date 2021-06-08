@@ -73,6 +73,7 @@ resource "kubectl_manifest" "traefik-middleware-auth" {
   depends_on = [
     kubernetes_namespace.traefik,
     helm_release.traefik,
+    kubernetes_secret.traefik_auth,
   ]
 }
 
@@ -94,7 +95,7 @@ resource "kubernetes_ingress" "traefik-ingres" {
       "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
       "traefik.ingress.kubernetes.io/router.tls" = "true"
       "traefik.ingress.kubernetes.io/router.middlewares" = "traefik-traefik-compress@kubernetescrd,traefik-traefik-auth@kubernetescrd"
-      "cert-manager.io/cluster-issuer" = "letsencrypt-production"
+      "cert-manager.io/cluster-issuer" = "letsencrypt-dns-production"
       "external-dns.alpha.kubernetes.io/hostname" = "traefik.${var.dns_domain}"
     }
   }

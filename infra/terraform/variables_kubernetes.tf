@@ -1,6 +1,6 @@
-//variable kubernetes_default_nodes {
-//  default = 1
-//}
+variable kubernetes_default_nodes {
+  default = 3
+}
 
 variable kubernetes_min_nodes {
   default = 1
@@ -16,7 +16,7 @@ variable server_size {
 }
 
 variable kubernetes_version {
-  default = "1.20.2-do.0"
+  default = "1.20.7-do.0"
 }
 
 variable kubernetes_auto_upgrade {

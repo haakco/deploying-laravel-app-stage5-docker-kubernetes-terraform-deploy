@@ -6,6 +6,7 @@ else
   echo "Read CLOUDFLARE_API_TOKEN from env"
 fi
 
+export TF_VAR_dns_domain=""
 export TF_VAR_traefik_username=""
 export TF_VAR_traefik_password=""
 export TF_VAR_traefik_auth=""
