@@ -4,3 +4,5 @@ basicauth:
   password: $TRAEFIK_PASSWD
 ingress:
   enabled: false
+helmProvider:
+  version: "v3"

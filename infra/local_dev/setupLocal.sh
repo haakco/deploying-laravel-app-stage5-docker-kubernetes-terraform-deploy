@@ -20,7 +20,7 @@ TRAEFIK_AUTH=$(docker run --rm -ti xmartlabs/htpasswd "${TRAEFIK_USERNAME}" "${T
 export TRAEFIK_AUTH
 
 kubectl create --namespace kube-system serviceaccount dashboard-admin-sa
-kubectl create --namespace kube-system clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
+kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin-sa
 
 helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
 helm repo update
@@ -46,15 +46,15 @@ helm repo update
 #https://docs.syseleven.de/metakube/en/metakube-accelerator/building-blocks/observability-monitoring/kube-prometheus-stack
 kubectl create namespace monitoring
 
-cat ./prometheus/prometheus-values.tmpl.yaml | envsubst > ./prometheus/prometheus-values.env.yaml
-kubectl apply --namespace monitoring -f ./prometheus/prometheus-values.env.yaml
+cat ./monitoring/prometheus-values.tmpl.yaml | envsubst > ./monitoring/prometheus-values.env.yaml
+kubectl apply --namespace monitoring -f ./monitoring/prometheus-values.env.yaml
 
 helm upgrade \
   --install \
   prometheus-operator \
   --namespace monitoring \
   --version 16.1.2 \
-  -f ./prometheus/prometheus-values.env.yaml \
+  -f ./monitoring/prometheus-values.env.yaml \
   prometheus-community/kube-prometheus-stack
 
 kubectl create namespace cert-manager
@@ -105,8 +105,8 @@ kubectl apply --namespace traefik -f ./traefik/traefik-ingres.env.yaml
 
 kubectl apply --namespace traefik -f ./traefik/traefik-monitoring.yml
 
-cat ./prometheus/prometheus-ingres.tmpl.yaml | envsubst > ./prometheus/prometheus-ingres.env.yaml
-kubectl apply --namespace monitoring -f ./prometheus/prometheus-ingres.env.yaml
+cat ./monitoring/prometheus-ingres.tmpl.yaml | envsubst > ./monitoring/prometheus-ingres.env.yaml
+kubectl apply --namespace monitoring -f ./monitoring/prometheus-ingres.env.yaml
 
 cat ./keel/keel-values.tmpl.yml | envsubst > ./keel/keel-values.env.yaml
 helm repo add keel https://charts.keel.sh

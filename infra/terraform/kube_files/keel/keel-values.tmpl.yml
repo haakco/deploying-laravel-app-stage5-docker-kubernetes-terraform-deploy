@@ -4,3 +4,5 @@ basicauth:
   password: ${traefik_password}
 ingress:
   enabled: false
+helmProvider:
+  version: "v3"
