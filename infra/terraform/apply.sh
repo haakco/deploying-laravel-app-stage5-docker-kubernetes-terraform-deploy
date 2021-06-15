@@ -31,8 +31,8 @@ terraform apply -refresh=true -parallelism=10
 #kubectl exec --tty --namespace wave -i $(kubectl get pods --namespace wave --field-selector status.phase=Running | grep wave-lv-example | head -n 1 | awk '{print $1}') -- bash -c 'su - www-data'
 
 #cd /var/www/site
-#php artisan migrate
-#php artisan db:seed
+#yes | php artisan migrate
+#yes | php artisan db:seed
 
 echo 'kubectl exec --tty --namespace wave -i $(kubectl get pods --namespace wave --field-selector status.phase=Running | grep wave-lv-example | head -n 1 | awk '"'"'{print $1}'"'"') -- bash -c '"'"'su - www-data'"'"''
 echo ""
