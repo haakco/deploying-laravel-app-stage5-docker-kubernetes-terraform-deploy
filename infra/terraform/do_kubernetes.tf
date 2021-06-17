@@ -1,8 +1,3 @@
-# Create a tag for LB
-resource "digitalocean_tag" "expose-lb" {
-  name = "expose-lb"
-}
-
 resource "digitalocean_kubernetes_cluster" "example" {
   name    = var.kubernetes_cluster_name
   region  = var.region
@@ -17,6 +12,5 @@ resource "digitalocean_kubernetes_cluster" "example" {
     min_nodes  = var.kubernetes_min_nodes
     max_nodes  = var.kubernetes_max_nodes
     node_count = var.kubernetes_default_nodes
-    tags = [digitalocean_tag.expose-lb.id]
   }
 }

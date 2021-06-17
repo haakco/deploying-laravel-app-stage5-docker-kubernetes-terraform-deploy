@@ -1,9 +1,5 @@
 terraform {
   required_providers {
-    cloudflare = {
-      source = "cloudflare/cloudflare"
-      version = "~> 2.21"
-    }
 
     digitalocean = {
       source = "digitalocean/digitalocean"
@@ -12,17 +8,17 @@ terraform {
 
     kubernetes = {
       source = "hashicorp/kubernetes"
-      version = "~> 2.2"
+      version = "~> 2.3"
     }
 
     kubectl = {
       source = "gavinbunney/kubectl"
-      version = "1.11.1"
+      version = "~> 1.11"
     }
 
     helm = {
       source = "hashicorp/helm"
-      version = "~> 2.1"
+      version = "~> 2.2"
     }
   }
 
