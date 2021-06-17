@@ -34,16 +34,13 @@ helm upgrade \
   --set metrics-server.args="{--kubelet-preferred-address-types=InternalIP,--kubelet-insecure-tls}" \
   kubernetes-dashboard/kubernetes-dashboard
 
-#kubectl describe secret $(kubectl get secrets | grep 'dashboard-admin' | awk '{print $1}')
-#kubectl proxy &
+#kubectl proxy
 #open "http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:https/proxy/#/login"
+#kubectl describe secret $(kubectl get secrets | grep 'dashboard-admin' | awk '{print $1}')
 
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
 
-#https://www.digitalocean.com/community/tutorials/how-to-set-up-digitalocean-kubernetes-cluster-monitoring-with-helm-and-prometheus-operator
-#http://www.dcasati.net/posts/installing-prometheus-on-kubernetes-v1.16.9/
-#https://docs.syseleven.de/metakube/en/metakube-accelerator/building-blocks/observability-monitoring/kube-prometheus-stack
 kubectl create namespace monitoring
 
 cat ./monitoring/prometheus-values.tmpl.yaml | envsubst > ./monitoring/prometheus-values.env.yaml
@@ -58,7 +55,6 @@ helm upgrade \
   prometheus-community/kube-prometheus-stack
 
 kubectl create namespace cert-manager
-#kubectl delete namespace cert-manager
 
 kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
 helm install\
@@ -74,12 +70,8 @@ do
   sleep 1
 done
 
-cat ./cloudflare-apikey-secret.tmpl.yaml | envsubst > ./cloudflare-apikey-secret.env.yaml
-
-kubectl --namespace cert-manager apply -f ./cloudflare-apikey-secret.env.yaml
-
-# Remove key so we dont accidentally save it.
-rm -rf ./cloudflare-apikey-secret.env.yaml
+cat ./cloudflare-apikey-secret.tmpl.yaml | envsubst | \
+  kubectl --namespace cert-manager apply -f -
 
 sleep 2
 
@@ -89,15 +81,19 @@ kubectl apply --namespace cert-manager -f ./cert/acme-dns-production.env.yaml
 cat ./cert/acme-dns-staging.tmpl.yaml | envsubst > ./cert/acme-dns-staging.env.yaml
 kubectl apply --namespace cert-manager  -f ./cert/acme-dns-staging.env.yaml
 
+kubectl create namespace traefik
+
 helm repo add traefik https://containous.github.io/traefik-helm-chart
 helm repo update
-kubectl create namespace traefik
+
+cat ./traefik/traefik-values.tmpl.yaml | envsubst > ./traefik/traefik-values.env.yaml
+
 helm upgrade \
   --install \
   traefik \
   --namespace traefik \
   --version 9.1.1 \
-  --values ./traefik/traefik-values.yaml \
+  --values ./traefik/traefik-values.env.yaml \
   traefik/traefik
 
 cat ./traefik/traefik-ingres.tmpl.yaml | envsubst > ./traefik/traefik-ingres.env.yaml
