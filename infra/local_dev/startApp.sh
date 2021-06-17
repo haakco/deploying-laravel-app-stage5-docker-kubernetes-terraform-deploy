@@ -4,12 +4,12 @@ export DOMAIN=dev.custd.com
 export TRAEFIK_USERNAME='traefik'
 export TRAEFIK_PASSWD='yairohchahKoo0haem0d'
 
-kubectl create namespace wave
-
 export DB_NAME=db_example
 export DB_USER=user_example
 export DB_PASS=password_example
 export DB_EXTERNAL_PORT=30432
+
+export REDIS_PASS=password_example
 
 if [[ -z ${REGISTRY_USERNAME} ]] ; then
   echo "Please enter the REGISTRY_USERNAME or set the env variable: "
@@ -25,38 +25,8 @@ else
   echo "Read REGISTRY_PASSWORD from env"
 fi
 
-kubectl apply --namespace wave -f ./wave/postgresql-pvc.yaml
-
-kubectl \
-  --namespace wave \
-  create secret \
-  docker-registry "docker-hub" \
-  --docker-server="https://index.docker.io/v2/" \
-  --docker-username="${REGISTRY_USERNAME}" \
-  --docker-password="${REGISTRY_PASSWORD}" \
-  --docker-email=""
-
-cat ./wave/postgresql-values.tmpl.yaml | envsubst > ./wave/postgresql-values.env.yaml
-helm upgrade \
-  --install \
-  wave-postgresql \
-  --namespace wave \
-  --version 10.4.8 \
-  -f ./wave/postgresql-values.env.yaml \
-  bitnami/postgresql
-
-export REDIS_PASS=password_example
-
-kubectl apply --namespace wave -f ./wave/redis-pvc.yaml
-
-cat ./wave/redis-values.tmpl.yaml | envsubst > ./wave/redis-values.env.yaml
-helm upgrade \
-  --install \
-  wave-redis \
-  --namespace wave \
-  --version 14.3.3 \
-  -f ./wave/redis-values.env.yaml \
-  bitnami/redis
+export REGISTRY_URL='https://index.docker.io/v2/'
+export REGISTRY_NAME='docker-hub'
 
 export APP_KEY=base64:8dQ7xw/kM9EYMV4cUkzKgET8jF4P0M0TOmmqN05RN2w=
 export APP_NAME=HaakCo Wave
@@ -81,6 +51,39 @@ export JWT_SECRET=Jrsweag3Mf0srOqDizRkhjWm5CEFcrBy
 WAVE_DIR=$(realpath "${PWD}/../../../deploying-laravel-app-ubuntu-20.04-php7.4-lv-wave")
 export WAVE_DIR
 
+kubectl create namespace wave
+
+kubectl \
+  --namespace wave \
+  create secret \
+  docker-registry "${REGISTRY_NAME}" \
+  --docker-server="${REGISTRY_URL}" \
+  --docker-username="${REGISTRY_USERNAME}" \
+  --docker-password="${REGISTRY_PASSWORD}" \
+  --docker-email=""
+
+kubectl apply --namespace wave -f ./wave/postgresql-pvc.yaml
+
+cat ./wave/postgresql-values.tmpl.yaml | envsubst > ./wave/postgresql-values.env.yaml
+helm upgrade \
+  --install \
+  wave-postgresql \
+  --namespace wave \
+  --version 10.4.8 \
+  -f ./wave/postgresql-values.env.yaml \
+  bitnami/postgresql
+
+kubectl apply --namespace wave -f ./wave/redis-pvc.yaml
+
+cat ./wave/redis-values.tmpl.yaml | envsubst > ./wave/redis-values.env.yaml
+helm upgrade \
+  --install \
+  wave-redis \
+  --namespace wave \
+  --version 14.3.3 \
+  -f ./wave/redis-values.env.yaml \
+  bitnami/redis
+
 cat ./wave/wave.deploy.tmpl.yaml | envsubst > ./wave/wave.deploy.env.yaml
 kubectl apply --namespace wave -f ./wave/wave.deploy.env.yaml
 
@@ -90,11 +93,11 @@ kubectl apply --namespace wave -f ./wave/rediscommander.deploy.env.yaml
 #kubectl exec --tty --namespace wave -i $(kubectl get pods --namespace wave | grep wave-lv-example | awk '{print $1}') -- bash -c 'su - www-data'
 
 #cd /var/www/site
-#php artisan migrate
-#php artisan db:seed
+#yes | php artisan migrate
+#yes | php artisan db:seed
 
 echo 'kubectl exec --tty --namespace wave -i $(kubectl get pods --namespace wave | grep wave-lv-example | awk '"'"'{print $1}'"'"'} -- bash -c '"'"'su - www-data'"'"
 echo ""
 echo "cd /var/www/site"
-echo "php artisan migrate"
-echo "php artisan db:seed"
+echo "yes | php artisan migrate"
+echo "yes | php artisan db:seed"

@@ -48,7 +48,9 @@ For production, we'll be using the same one previously as well:
 
 * https://github.com/haakco/deploying-laravel-app-ubuntu-20.04-php7.4-lv-wave
 
-## Script
+## Development Setup
+
+### Script
 
 I've provided a script that should fully set up your local enviroment.
 
@@ -58,7 +60,7 @@ All the steps bellow are also in the script.
 
 Just remember to change the variables to your local enviroment.
 
-## Environmental variables
+### Environmental variables
 
 Kubectl doesn't pay attention to environmental variables we'll be
 using [envsubst](https://www.gnu.org/software/gettext/manual/html_node/envsubst-Invocation.html)
@@ -78,7 +80,7 @@ This is done so that you can see and check what the created file actually looks 
 Long term you should possible look at something like [Vault](https://www.vaultproject.io/) or
 [1Password Secrets](https://support.1password.com/connect-deploy-kubernetes/).
 
-## Settings
+### Settings
 
 We'll be configuring most of the simple setting via environmental variables.
 
@@ -104,9 +106,9 @@ TRAEFIK_AUTH=$(docker run --rm -ti xmartlabs/htpasswd "${TRAEFIK_USERNAME}" "${T
 export TRAEFIK_AUTH
 ```
 
-## Helm
+### Helm
 
-I'll be mainly using [helm](https://helm.sh/) to deploy services like the DB.
+I'll be mainly using [Helm](https://Helm.sh/) to deploy services like the DB.
 
 This is done to just decrease the amount of things that you have to manage.
 
@@ -118,7 +120,7 @@ I'll be locking all the Helm installs to a specific version.
 I've had random things break with different chart versions, so it's safer to lock the installation
 down to a version.
 
-## Setting up local enviroment.
+### Setting up local enviroment.
 
 For the local enviroment I'm using [Docker Desktop](https://www.docker.com/products/docker-desktop)
 with kubernetes enabled.
@@ -128,13 +130,13 @@ There are several alternatives.
 We are then going to enable our Kubernetes enviroment first, by adding tools to make our lives
 simpler and provide reporting.
 
-## Namespaces
+### Namespaces
 
 We'll be splitting applications into separate namespaces.
 
 This is to make it easier manage things and simpler cleanup.
 
-### Kubernetes Dashboard
+#### Kubernetes Dashboard
 
 We'll start with adding [Kubernetes Dashboard](https://kubernetes.
 io/docs/tasks/access-application-cluster/web-ui-dashboard/).
@@ -145,9 +147,9 @@ This make it easier to see what's going on quickly and get access to log and ter
 kubectl create --namespace kube-system serviceaccount dashboard-admin-sa
 kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin-sa
 
-helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-helm repo update
-helm upgrade \
+Helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+Helm repo update
+Helm upgrade \
   --install \
   kubernetes-dashboard \
   --namespace kube-system \
@@ -161,9 +163,9 @@ helm upgrade \
 For security, we are going to first create a service account and grant it rights to access the
 allowed Dashboard to access all the sections once you are logged in.
 
-We then add the helm repository and then install vial helm.
+We then add the Helm repository and then install vial Helm.
 
-We also change the helm setting to install metrics server and the metrics scraper.
+We also change the Helm setting to install metrics server and the metrics scraper.
 
 As we are installing on [Docker Desktop](https://www.docker.com/products/docker-desktop) we need to
 disable tls security.
@@ -197,7 +199,7 @@ Just type getKubeTokenKS to get the token.
 Alternatively you can also look at [Lens](https://k8slens.dev/). This may be helpful if dashboard is
 broken or not installed.
 
-### Monitoring and Alerting
+#### Monitoring and Alerting
 
 We'll be using the [prometheus-operator](https://github.
 com/prometheus-operator/prometheus-operator) for monitoring and alerting.
@@ -252,14 +254,14 @@ kubeScheduler:
 We'll also create a new namespace for monitoring.
 
 ```shell
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
+Helm repo add prometheus-community https://prometheus-community.github.io/Helm-charts
+Helm repo update
 
 kubectl create namespace monitoring
 cat ./monitoring/prometheus-values.tmpl.yaml | envsubst > ./monitoring/prometheus-values.env.yaml
 kubectl apply --namespace monitoring -f ./monitoring/prometheus-values.env.yaml
 
-helm upgrade \
+Helm upgrade \
   --install \
   prometheus-operator \
   --namespace monitoring \
@@ -271,7 +273,7 @@ helm upgrade \
 We'll be adding the ingress routes (Making the systems externally visible) later once we've added
 Traefik.
 
-### Cert Manager
+#### Cert Manager
 
 To generate certificates for our end points we'll be using [CertManager](https://cert-manager.io/).
 
@@ -286,7 +288,7 @@ kubectl create namespace cert-manager
 #kubectl delete namespace cert-manager
 
 kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
-helm install\
+Helm install\
   cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --version 1.3.1 \
@@ -349,11 +351,11 @@ kubectl apply --namespace cert-manager -f ./cert/acme-dns-production.env.yaml
 
 This certificate cluster issuer can now be used in our traefik ingress.
 
-### Traefik
+#### Traefik
 
 Now that we have all the supporting services added we can add Traefik.
 
-First we have the helm configuration file.
+First we have the Helm configuration file.
 
 [./infra/local_dev/traefik/traefik-values.tmpl.yaml](./infra/local_dev/traefik/traefik-values.tmpl.yaml)
 ```yaml
@@ -415,12 +417,12 @@ Once we have that we can then install traefik via Helm.
 ```shell
 kubectl create namespace traefik
 
-helm repo add traefik https://containous.github.io/traefik-helm-chart
-helm repo update
+Helm repo add traefik https://containous.github.io/traefik-Helm-chart
+Helm repo update
 
 cat ./traefik/traefik-values.tmpl.yaml | envsubst > ./traefik/traefik-values.env.yaml
 
-helm upgrade \
+Helm upgrade \
   --install \
   traefik \
   --namespace traefik \
@@ -603,7 +605,7 @@ cat ./monitoring/prometheus-ingres.tmpl.yaml | envsubst > ./monitoring/prometheu
 kubectl apply --namespace monitoring -f ./monitoring/prometheus-ingres.env.yaml
 ```
 
-### Image updating / Keel
+#### Image updating / Keel
 
 The final bit for our setup of the kubernetes system is to add [Keel](https://keel.sh/).
 
@@ -614,7 +616,7 @@ how we want the images to be updated.
 
 This installation follows the same patter as the previous ones.
 
-Set up the config file, install via helm using the config and add a ingres route.
+Set up the config file, install via Helm using the config and add a ingres route.
 
 [./infra/local_dev/keel/keel-values.tmpl.yml](./infra/local_dev/keel/keel-values.tmpl.yml)
 ```yaml
@@ -625,7 +627,7 @@ basicauth:
   password: $TRAEFIK_PASSWD
 ingress:
   enabled: false
-helmProvider:
+HelmProvider:
   version: "v3"
 ```
 
@@ -676,9 +678,9 @@ spec:
 ```shell
 
 cat ./keel/keel-values.tmpl.yml | envsubst > ./keel/keel-values.env.yaml
-helm repo add keel https://charts.keel.sh
-helm repo update
-helm upgrade \
+Helm repo add keel https://charts.keel.sh
+Helm repo update
+Helm upgrade \
   --install keel \
   --namespace=kube-system \
   --version 0.9.8 \
@@ -688,3 +690,523 @@ helm upgrade \
 cat ./keel/keel-ingres.tmpl.yaml | envsubst > ./keel/keel-ingres.env.yaml
 kubectl apply --namespace kube-system -f ./keel/keel-ingres.env.yaml
 ```
+
+#### Deploying Laravel
+
+I've split the deployment of the laravel application off to simplify things.
+
+It also means if you want you can run multiple applications on the same kubernetes environment.
+
+You can see the full script at
+
+[./infra/local_dev/startApp.sh](./infra/local_dev/startApp.sh)
+
+##### Environmental Variables
+
+There are a couple environmental variables in the run script. Please alter then to suit your 
+enviroment.
+
+Please note the WAVE_DIR which should point to the location of your Laravel code.
+
+```shell
+export DOMAIN=dev.custd.com
+export TRAEFIK_USERNAME='traefik'
+export TRAEFIK_PASSWD='yairohchahKoo0haem0d'
+
+export DB_NAME=db_example
+export DB_USER=user_example
+export DB_PASS=password_example
+export DB_EXTERNAL_PORT=30432
+
+export REDIS_PASS=password_example
+
+if [[ -z ${REGISTRY_USERNAME} ]] ; then
+  echo "Please enter the REGISTRY_USERNAME or set the env variable: "
+  read -r REGISTRY_USERNAME
+else
+  echo "Read REGISTRY_USERNAME from env"
+fi
+
+if [[ -z ${REGISTRY_PASSWORD} ]] ; then
+  echo "Please enter the REGISTRY_PASSWORD or set the env variable: "
+  read -r REGISTRY_PASSWORD
+else
+  echo "Read REGISTRY_PASSWORD from env"
+fi
+
+export REGISTRY_URL='https://index.docker.io/v2/'
+export REGISTRY_NAME='docker-hub'
+
+export APP_KEY=base64:8dQ7xw/kM9EYMV4cUkzKgET8jF4P0M0TOmmqN05RN2w=
+export APP_NAME=HaakCo Wave
+export APP_ENV=local
+export APP_DEBUG=true
+export APP_LOG_LEVEL=debug
+export DOMAIN_NAME=$DOMAIN
+export DB_HOST=wave-postgresql
+export DB_NAME=$DB_NAME
+export DB_USER=$DB_USER
+export DB_PASS=$DB_PASS
+export REDIS_HOST=wave-redis-master
+export REDIS_PASS=$REDIS_PASS
+export MAIL_HOST=smtp.mailtrap.io
+export MAIL_PORT=2525
+export MAIL_USERNAME=
+export MAIL_PASSWORD=
+export MAIL_ENCRYPTION=null
+export TRUSTED_PROXIES='10.0.0.0/8,172.16.0.0./12,192.168.0.0/16'
+export JWT_SECRET=Jrsweag3Mf0srOqDizRkhjWm5CEFcrBy
+
+WAVE_DIR=$(realpath "${PWD}/../../../deploying-laravel-app-ubuntu-20.04-php7.4-lv-wave")
+export WAVE_DIR
+```
+
+##### Namespace
+
+Next we create a specific names space for the application.
+
+```shell
+kubectl create namespace wave
+```
+
+##### Registry Auth
+
+In this example the docker image is public , though for most real life your 
+images will most likely be private.
+
+To access these you'll need registry auth.
+
+So we first add the secret for registry auth.
+
+```shell
+kubectl \
+  --namespace wave \
+  create secret \
+  docker-registry "${REGISTRY_NAME}" \
+  --docker-server="${REGISTRY_URL}" \
+  --docker-username="${REGISTRY_USERNAME}" \
+  --docker-password="${REGISTRY_PASSWORD}" \
+  --docker-email=""
+```
+
+##### Database
+
+Ok now we need to setup our database.
+
+We first want to create volume claim to make sure our database is persisted.
+
+[./infra/local_dev/wave/postgresql-pvc.yaml](./infra/local_dev/wave/postgresql-pvc.yaml)
+```yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+```
+
+Next we install postgres via a Helm chart.
+
+First we set the config values.
+
+[./infra/local_dev/wave/postgresql-values.tmpl.yaml](./infra/local_dev/wave/postgresql-values.tmpl.yaml)
+```yaml
+---
+image:
+  tag: 13
+  pullPolicy: Always
+postgresqlDatabase: $DB_NAME
+postgresqlUsername: $DB_USER
+postgresqlPassword: $DB_PASS
+#existingSecret:
+metrics:
+  enabled: true
+persistence:
+  enabled: true
+  existingClaim: postgres-pvc
+service:
+  type: NodePort
+  nodePort: $DB_EXTERNAL_PORT
+```
+
+You'll see we lock the version down to 13 just as we did the in previous stage.
+
+We also set it to create a service for postgres, so we can make it externally accessible.
+
+Next we replace the variables and then install the Helm chart.
+
+```shell
+kubectl apply --namespace wave -f ./wave/postgresql-pvc.yaml
+
+cat ./wave/postgresql-values.tmpl.yaml | envsubst > ./wave/postgresql-values.env.yaml
+helm upgrade \
+  --install \
+  wave-postgresql \
+  --namespace wave \
+  --version 10.4.8 \
+  -f ./wave/postgresql-values.env.yaml \
+  bitnami/postgresql
+```
+
+##### Redis
+
+We follow almost exactly the same process for redis as we did for postgres.
+
+Create the persistent volume. 
+
+[./infra/local_dev/wave/redis-pvc.yaml](./infra/local_dev/wave/redis-pvc.yaml)
+```yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: redis-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+```
+
+Then set the Helm values.
+
+[./infra/local_dev/wave/redis-values.tmpl.yaml](./infra/local_dev/wave/redis-values.tmpl.yaml)
+```yaml
+---
+architecture: standalone
+image:
+  pullPolicy: Always
+auth:
+  password: $REDIS_PASS
+master:
+  persistence:
+    existingClaim:
+      redis-pvc
+```
+
+Finally, we install everything.
+
+```shell
+kubectl apply --namespace wave -f ./wave/redis-pvc.yaml
+
+cat ./wave/redis-values.tmpl.yaml | envsubst > ./wave/redis-values.env.yaml
+helm upgrade \
+  --install \
+  wave-redis \
+  --namespace wave \
+  --version 14.3.3 \
+  -f ./wave/redis-values.env.yaml \
+  bitnami/redis
+```
+
+##### Deploy Laravel Application
+
+To deploy the Laravel application we'll first create a deployment, we'll then make it visible to 
+the cluster and finally we'll make it accessible via an ingress route and Traefik.
+
+You could split these into seperate files.
+
+I've put them all in the same file to show they should all be run together.
+
+So first lets deploy the application.
+
+###### Deploy
+[./infra/local_dev/wave/wave.deploy.tmpl.yaml](./infra/local_dev/wave/wave.deploy.tmpl.yaml)
+```yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wave-lv-example
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: "@every 5m"
+spec:
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: wave-lv-example
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: wave-lv-example
+    spec:
+      imagePullSecrets:
+        - name: docker-hub
+      containers:
+        - name: wave-lv-example
+          image: haakco/deploying-laravel-app-ubuntu-20.04-php7.4-lv
+          ports:
+            - containerPort: 80
+          env:
+            - name: ENABLE_HORIZON
+              value: "FALSE"
+            - name: CRONTAB_ACTIVE
+              value: "TRUE"
+            - name: GEN_LV_ENV
+              value: "TRUE"
+            - name: LVENV_APP_NAME
+              value: "$APP_NAME"
+            - name: LVENV_APP_ENV
+              value: "$APP_ENV"
+            - name: LVENV_APP_KEY
+              value: "$APP_KEY"
+            - name: LVENV_APP_DEBUG
+              value: "$APP_DEBUG"
+            - name: LVENV_APP_LOG_LEVEL
+              value: "$APP_LOG_LEVEL"
+            - name: LVENV_APP_URL
+              value: "https://$DOMAIN_NAME"
+            - name: LVENV_DB_CONNECTION
+              value: "pgsql"
+            - name: LVENV_DB_HOST
+              value: "$DB_HOST"
+            - name: LVENV_DB_PORT
+              value: "5432"
+            - name: LVENV_DB_DATABASE
+              value: "$DB_NAME"
+            - name: LVENV_DB_USERNAME
+              value: "$DB_USER"
+            - name: LVENV_DB_PASSWORD
+              value: "$DB_PASS"
+            - name: LVENV_BROADCAST_DRIVER
+              value: "log"
+            - name: LVENV_CACHE_DRIVER
+              value: "redis"
+            - name: LVENV_SESSION_DRIVER
+              value: "redis"
+            - name: LVENV_SESSION_LIFETIME
+              value: "9999"
+            - name: LVENV_QUEUE_DRIVER
+              value: "redis"
+            - name: LVENV_REDIS_HOST
+              value: "$REDIS_HOST"
+            - name: LVENV_REDIS_PASSWORD
+              value: "$REDIS_PASS"
+            - name: LVENV_REDIS_PORT
+              value: "6379"
+            - name: LVENV_MAIL_DRIVER
+              value: "smtp"
+            - name: LVENV_MAIL_HOST
+              value: "$MAIL_HOST"
+            - name: LVENV_MAIL_PORT
+              value: "$MAIL_PORT"
+            - name: LVENV_MAIL_USERNAME
+              value: "$MAIL_USERNAME"
+            - name: LVENV_MAIL_PASSWORD
+              value: "$MAIL_PASSWORD"
+            - name: LVENV_MAIL_ENCRYPTION
+              value: "$MAIL_ENCRYPTION"
+            - name: LVENV_PUSHER_APP_ID
+              value: ""
+            - name: LVENV_PUSHER_APP_KEY
+              value: ""
+            - name: LVENV_PUSHER_APP_SECRET
+              value: ""
+            - name: LVENV_REDIS_CLIENT
+              value: "phpredis"
+            - name: LVENV_JWT_SECRET
+              value: "$JWT_SECRET"
+            - name: LVENV_PADDLE_VENDOR_ID
+              value: ""
+            - name: LVENV_PADDLE_VENDOR_AUTH_CODE
+              value: ""
+            - name: LVENV_PADDLE_ENV
+              value: "sandbox"
+            - name: LVENV_WAVE_DOCS
+              value: "true"
+            - name: LVENV_WAVE_DEMO
+              value: "true"
+            - name: LVENV_WAVE_BAR
+              value: "true"
+            - name: LVENV_TRUSTED_PROXIES
+              value: "$TRUSTED_PROXIES"
+            - name: LVENV_ASSET_URL
+              value: " "
+          volumeMounts:
+            - mountPath: /var/www/site
+              name: wave-volume
+      volumes:
+        - name: wave-volume
+          hostPath:
+            path: $WAVE_DIR
+```
+
+You'll see its quiet similar to the previous composer deployment.
+
+We mount the directory with our code in via a Volume.
+
+```yaml
+    volumeMounts:
+      - mountPath: /var/www/site
+        name: wave-volume
+volumes:
+  - name: wave-volume
+    hostPath:
+      path: $WAVE_DIR
+```
+
+We set the enviroment up with environmental variables.
+
+```yaml
+env:
+  - name: ENABLE_HORIZON
+    value: "FALSE"
+  - name: CRONTAB_ACTIVE
+    value: "TRUE"
+```
+
+The one big difference is the annotations metioned to let Keel know how we want it to update the 
+image.
+
+```yaml
+annotations:
+  keel.sh/policy: force
+  keel.sh/trigger: poll
+  keel.sh/pollSchedule: "@every 5m"
+```
+
+##### Service
+
+Next we create a service allowing the application to be visable to the cluster.
+
+This is mainly needed so that Traefik can send traffic to the application.
+
+```yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wave-lv-example
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: wave-lv-example
+```
+
+
+##### Ingres
+
+Finally, we add the ingress route.
+
+```yaml
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: wave-lv-example
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-traefik-compress@kubernetescrd
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    traefik.ingress.kubernetes.io/redirect-regex: "^https://www.$DOMAIN/(.*)"
+    traefik.ingress.kubernetes.io/redirect-replacement: "https://$DOMAIN/$1"
+spec:
+  tls:
+    - hosts:
+        - $DOMAIN
+        - www.$DOMAIN
+      secretName: wave-cert-tls
+  rules:
+    - host: $DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wave-lv-example
+                port:
+                  number: 80
+    - host: www.$DOMAIN
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wave-lv-example
+                port:
+                  number: 80
+```
+
+This follows similar patters to the previous ingres routes.
+
+The only big difference is redirecting the www domain to the route domain.
+
+This isn't really needed for dev but it s a good idea to do for productions.
+
+```yaml
+    traefik.ingress.kubernetes.io/redirect-regex: "^https://www.$DOMAIN/(.*)"
+    traefik.ingress.kubernetes.io/redirect-replacement: "https://$DOMAIN/$1"
+```
+
+##### Apply
+
+Now we just need to apply this to bring our application up.
+
+```shell
+cat ./wave/wave.deploy.tmpl.yaml | envsubst > ./wave/wave.deploy.env.yaml
+kubectl apply --namespace wave -f ./wave/wave.deploy.env.yaml
+```
+
+#### Redis commander
+
+As we did previously to make development easier I've added Redis Commander.
+
+```shell
+cat ./wave/rediscommander.deploy.tmpl.yaml | envsubst > ./wave/rediscommander.deploy.env.yaml
+kubectl apply --namespace wave -f ./wave/rediscommander.deploy.env.yaml
+```
+
+
+#### Final setup
+
+Ok now we just need to run our migrations and DB seed.
+
+This could be automated via job but for simplicity we'll do it by hand.
+
+First run
+
+```shell
+kubectl exec --tty --namespace wave -i $(kubectl get pods --namespace wave | grep wave-lv-example | awk '{print $1}') -- bash -c 'su - www-data'
+```
+
+This basically gets the pod for the Laravel application then execs into it.
+
+Once we are in we just need run the following to update everything.
+
+```shell
+cd /var/www/site
+yes | php artisan migrate
+yes | php artisan db:seed
+```
+
+You should now be able to access your development site at 
+
+https://dev.example.com
+
+## Production setup
+
+We'll next cover the production setup. 
+
+For this we'll be using Digital Oceans kubernetes.
+
+We'll set this up via Terraform and then do systems helm setup via Terraform as well.
+
+### Terraform 
