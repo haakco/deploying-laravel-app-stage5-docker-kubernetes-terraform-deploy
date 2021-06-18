@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export DNS_DOMAIN='purplesocks.net'
+export DNS_DOMAIN='example.com'
 export TRAEFIK_USERNAME='traefik'
 export TRAEFIK_PASSWD='yairohchahKoo0haem0d'
 export GRAFANA_ADMIN_PASSWORD='example_password'

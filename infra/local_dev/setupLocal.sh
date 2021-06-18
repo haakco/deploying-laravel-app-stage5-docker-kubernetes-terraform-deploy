@@ -10,7 +10,7 @@ fi
 
 export CLOUDFLARE_API_TOKEN
 
-export DOMAIN=dev.custd.com
+export DOMAIN=dev.example.com
 export CERT_EMAIL="cert@${DOMAIN}"
 export TRAEFIK_USERNAME='traefik'
 export TRAEFIK_PASSWD='yairohchahKoo0haem0d'

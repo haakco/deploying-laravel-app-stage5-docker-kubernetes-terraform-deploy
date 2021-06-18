@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 setopt interactive_comments
-export DOMAIN=dev.custd.com
+export DOMAIN=dev.example.com
 export TRAEFIK_USERNAME='traefik'
 export TRAEFIK_PASSWD='yairohchahKoo0haem0d'
 
