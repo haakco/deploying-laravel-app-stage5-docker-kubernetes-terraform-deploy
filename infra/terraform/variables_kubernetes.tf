@@ -11,12 +11,17 @@ variable kubernetes_max_nodes {
 }
 
 variable server_size {
-  default = "s-2vcpu-4gb"
-  //    default = "s-4vcpu-8gb"
+#  default = "s-2vcpu-4gb"
+  default = "s-4vcpu-8gb"
 }
 
-variable kubernetes_version {
-  default = "1.20.7-do.0"
+#doctl kubernetes options versions
+#variable kubernetes_version {
+#  default = "1.21.3-do.0"
+#}
+
+variable kubernetes_version_prefix {
+  default = "1.21."
 }
 
 variable kubernetes_auto_upgrade {
