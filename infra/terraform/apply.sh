@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 autoload colors; colors
 
-export DNS_DOMAIN='hotsquid.com'
+export DNS_DOMAIN='example.com'
 export TRAEFIK_USERNAME='traefik'
 export TRAEFIK_PASSWD='yairohchahKoo0haem0d'
 export GRAFANA_ADMIN_PASSWORD='example_password'
