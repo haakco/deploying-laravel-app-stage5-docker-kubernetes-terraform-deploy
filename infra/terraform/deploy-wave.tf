@@ -155,7 +155,7 @@ resource "kubernetes_deployment" "wave-lv-example" {
           name = "docker-registry-credential"
         }
         container {
-          image = "haakco/deploying-laravel-app-ubuntu-20.04-php7.4-lv-wave:latest"
+          image = "haakco/deploying-laravel-app-ubuntu-20.04-php8.0-lv-wave:latest"
           name = "wave-lv-example"
 
           port {

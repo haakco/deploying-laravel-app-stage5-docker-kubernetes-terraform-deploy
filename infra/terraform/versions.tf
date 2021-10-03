@@ -3,12 +3,12 @@ terraform {
 
     digitalocean = {
       source = "digitalocean/digitalocean"
-      version = "~> 2.9"
+      version = "~> 2.12"
     }
 
     kubernetes = {
       source = "hashicorp/kubernetes"
-      version = "~> 2.3"
+      version = "~> 2.5"
     }
 
     kubectl = {
@@ -18,10 +18,10 @@ terraform {
 
     helm = {
       source = "hashicorp/helm"
-      version = "~> 2.2"
+      version = "~> 2.3"
     }
   }
 
-  required_version = "~> 1.0.0"
+  required_version = "~> 1.0"
 }
 
