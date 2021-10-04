@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 autoload colors; colors
 
+#purplesocks.net
 export DNS_DOMAIN='example.com'
 export TRAEFIK_USERNAME='traefik'
 export TRAEFIK_PASSWD='yairohchahKoo0haem0d'

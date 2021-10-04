@@ -4,6 +4,9 @@
 
 This stage covers how to deploy to kubernetes and set up a local kubernetes development enviroment.
 
+##Demo
+[![asciicast](https://asciinema.org/a/439652.svg)](https://asciinema.org/a/439652)
+
 ### Pros
 
 * Very repeatable
