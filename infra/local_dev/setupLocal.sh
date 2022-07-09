@@ -16,7 +16,7 @@ export TRAEFIK_USERNAME='traefik'
 export TRAEFIK_PASSWD='yairohchahKoo0haem0d'
 export GRAFANA_ADMIN_PASSWORD=example_password
 
-TRAEFIK_AUTH=$(docker run --rm -ti xmartlabs/htpasswd "${TRAEFIK_USERNAME}" "${TRAEFIK_PASSWD}" | openssl base64 -A)
+TRAEFIK_AUTH=$(docker run --rm -ti sineverba/htpasswd "${TRAEFIK_USERNAME}" "${TRAEFIK_PASSWD}" | openssl base64 -A)
 export TRAEFIK_AUTH
 
 kubectl create --namespace kube-system serviceaccount dashboard-admin-sa

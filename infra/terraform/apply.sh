@@ -48,7 +48,7 @@ export TF_VAR_dns_domain="${DNS_DOMAIN}"
 export TF_VAR_traefik_username="${TRAEFIK_USERNAME}"
 export TF_VAR_traefik_password="${TRAEFIK_PASSWD}"
 
-TF_VAR_traefik_auth=$(docker run --rm -ti xmartlabs/htpasswd "${TRAEFIK_USERNAME}" "${TRAEFIK_PASSWD}")
+TF_VAR_traefik_auth=$(docker run --rm -ti sineverba/htpasswd "${TRAEFIK_USERNAME}" "${TRAEFIK_PASSWD}")
 export TF_VAR_traefik_auth
 
 export TF_VAR_cloudflare_api_token=${CLOUDFLARE_API_TOKEN}
